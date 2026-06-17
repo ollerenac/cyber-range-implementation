@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-08T07:18:43.820Z",
+  "timestamp": "2026-06-17T08:29:00.000Z",
   "phase": "01",
   "phase_name": "Proxmox Foundation + SIEM Node",
   "phase_dir": ".planning/phases/01-proxmox-foundation-siem-node",
@@ -9,57 +9,33 @@
   "total_tasks": 0,
   "status": "paused",
   "completed_tasks": [
-    {
-      "id": 1,
-      "name": "gsd-new-project: PROJECT.md + REQUIREMENTS.md + ROADMAP.md + STATE.md",
-      "status": "done",
-      "commit": "prior session"
-    },
-    {
-      "id": 2,
-      "name": "gsd-discuss-phase 1: 4 gray areas discussed, CONTEXT.md written",
-      "status": "done",
-      "commit": "6aa859c"
-    }
+    {"id": 1, "name": "gsd-new-project: PROJECT.md + REQUIREMENTS.md + ROADMAP.md + STATE.md", "status": "done", "commit": "prior session"},
+    {"id": 2, "name": "gsd-discuss-phase 1: 4 gray areas discussed, 01-CONTEXT.md written", "status": "done", "commit": "6aa859c"},
+    {"id": 3, "name": "quick: VM distribution across 6 physical hosts (Option B selected)", "status": "done", "commit": "session — NOT YET in CONTEXT.md"},
+    {"id": 4, "name": "quick: APT cross-infra analysis — ws02 identified as missing VM", "status": "done", "commit": "session — NOT YET in CONTEXT.md"},
+    {"id": 5, "name": "quick: propuesta-cyber-range-alumnos.pdf created", "status": "done", "commit": "0c5412a"}
   ],
   "remaining_tasks": [
-    {
-      "id": 3,
-      "name": "gsd-plan-phase 1: decompose Phase 1 into executable plans",
-      "status": "not_started"
-    }
+    {"id": 6, "name": "Update 01-CONTEXT.md with 9 new session decisions (all in_context_md:false below) — MUST DO BEFORE PLANNING", "status": "not_started"},
+    {"id": 7, "name": "gsd-plan-phase 1: decompose Phase 1 into executable plans", "status": "not_started"}
   ],
   "blockers": [],
   "human_actions_pending": [
-    {
-      "action": "Confirm hardware availability for Proxmox installation",
-      "context": "Phase 1 entry condition: 5-6 physical machines (8 vCPU, 16 GB RAM each) must be available. Managed switch with 802.1Q VLAN support must be configured.",
-      "blocking": false
-    }
+    {"action": "Confirm hardware availability", "context": "4 groups x 6 machines (20 vCPU, 16 GB RAM, 220 GB disk) + 4 switches 802.1Q + ~32 cables Cat5e 3m", "blocking": false}
   ],
   "decisions": [
-    {
-      "decision": "VLAN 802.1Q (VLAN 10) on managed switch for TARGET network cross-host connectivity",
-      "rationale": "Managed switch already available; TARGET VMs on different physical machines need to communicate without internet access",
-      "phase": "01"
-    },
-    {
-      "decision": "LVM-thin storage backend, 1 snapshot (clean_state) per VM, ~500 GB/host",
-      "rationale": "Proxmox 8.x default, zero RAM overhead, reliable qm rollback; single snapshot keeps thin-pool predictable",
-      "phase": "01"
-    },
-    {
-      "decision": "Elasticsearch heap: Xms8g/Xmx8g on elastic-vm (12 GB RAM); CALDERA on caldera-vm (4 GB RAM) — both VMs on the same Proxmox host, never in reset cycle",
-      "rationale": "8 GB heap balances ES with OS page cache; separating CALDERA isolates red team control plane without needing an extra physical machine",
-      "phase": "01"
-    },
-    {
-      "decision": "Lab-own CA (elasticsearch-certutil ca); Fleet Server cert SAN: IP:10.0.0.10; CA cert distributed via provisioning script before enrollment",
-      "rationale": "Works offline/air-gapped; reproducible; no DNS dependency in Phase 1 before dc01 exists",
-      "phase": "01"
-    }
+    {"decision": "D-01 to D-13: VLAN 802.1Q, LVM-thin, ES heap 8g, Lab CA, Fleet SAN IP:10.0.0.10", "rationale": "Original discuss-phase decisions", "phase": "01", "in_context_md": true},
+    {"decision": "elastic-vm RAM: 14 GB (was 12 GB) — solo en Host 1 sin co-tenants", "rationale": "Mas page cache OS; 2 GB sobrante para Proxmox overhead es limite aceptable con 16 GB fisicos", "phase": "01", "in_context_md": false},
+    {"decision": "caldera-vm movido a Host 6 junto con kali", "rationale": "Host 1 exclusivo para elastic-vm; caldera+kali en mismo host es limpio para operador red team", "phase": "01", "in_context_md": false},
+    {"decision": "ws02 agregado: segunda workstation Windows 10", "rationale": "APT29 S1, S2 y Wizard Spider requieren 2 workstations; plan original solo tenia ws01", "phase": "01", "in_context_md": false},
+    {"decision": "exchange01: 10 GB RAM (subido de 8 GB)", "rationale": "Exchange 2019 se beneficia del extra; host de 16 GB lo permite con margen", "phase": "01", "in_context_md": false},
+    {"decision": "Option B: dc01 (4 GB) + sql01 (5 GB) co-locados en Host 2", "rationale": "Libera Host 5 como SPARE/IDS; trade-off aceptable en lab controlado", "phase": "01", "in_context_md": false},
+    {"decision": "Host 5: SPARE / futuro sensor IDS de red (Suricata/Zeek)", "rationale": "IDS de red complementa Elastic Defend y Packetbeat; mayor riqueza en tabla de resultados", "phase": "01", "in_context_md": false},
+    {"decision": "IPs TARGET 10.10.10.0/24: dc01=.10, exchange01=.20, sql01=.30, ws01=.40, ws02=.50, kali=.200", "rationale": "DC .10 fija antes de que Exchange/SQL unan dominio; kali .200 separa atacante", "phase": "01", "in_context_md": false},
+    {"decision": "IPs MGMT 10.0.0.0/24: elastic-vm=.10 (bloqueado), caldera-vm=.20, dc01=.11, exchange01=.12, sql01=.13, ws01=.14, ws02=.15, kali=.16", "rationale": "elastic-vm .10 bloqueado por Fleet SAN (D-12); resto en secuencia logica", "phase": "01", "in_context_md": false},
+    {"decision": "Layout fisico: Host1=elastic-vm(14GB) | Host2=dc01+sql01 | Host3=exchange01(10GB) | Host4=ws01+ws02 | Host5=SPARE | Host6=caldera+kali", "rationale": "Maximiza SIEM, Exchange aislado, IDS slot libre", "phase": "01", "in_context_md": false}
   ],
   "uncommitted_files": [],
-  "next_action": "Run /gsd-plan-phase 1 to decompose Phase 1 into executable plans. CONTEXT.md is ready at .planning/phases/01-proxmox-foundation-siem-node/01-CONTEXT.md",
-  "context_notes": "discuss-phase 1 is fully complete. 4 gray areas were discussed across two sessions (Red entre maquinas in session 1; Storage de Proxmox, RAM de elastic-vm, TLS de Fleet Server in session 2). All decisions captured in 01-CONTEXT.md. No blocking constraints. No scope creep. Ready to plan."
+  "next_action": "PRIMERO: actualizar 01-CONTEXT.md con las 9 decisiones in_context_md:false. LUEGO: /gsd-plan-phase 1",
+  "context_notes": "discuss-phase 1 completo (D-01..D-13 en CONTEXT.md). Esta sesion genero 9 decisiones extra en discusion conversacional SIN escribir a CONTEXT.md: host layout Option B, ws02, RAM updates, IPs TARGET y MGMT. El planificador NECESITA estas antes de escribir PLAN.md. PDF propuesta alumnos committida en docs/. Repo limpio. Contexto sesion al 70% al pausar."
 }
