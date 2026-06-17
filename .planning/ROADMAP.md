@@ -31,7 +31,12 @@
   2. Operator opens https://10.0.0.10:5601 and logs into Kibana — Elasticsearch cluster health is green
   3. Operator opens Fleet UI and sees an active Fleet Server with a valid enrollment token ready to copy
   4. A test VM on vmbr1 cannot ping 8.8.8.8 or any host LAN address — network isolation confirmed
-**Plans:** TBD
+**Plans:** 4 plans (4 waves)
+Plans:
+- [ ] 01-01-PLAN.md — Proxmox networking foundation: vmbr0/vmbr1 bridges on all 6 hosts, VLAN 10 switch config, LVM-thin + isolation gates
+- [ ] 01-02-PLAN.md — Create elastic-vm (Host 1) + caldera-vm (Host 6) with locked specs and Ubuntu 22.04 base
+- [ ] 01-03-PLAN.md — SIEM stack on elastic-vm: Elasticsearch/Kibana/Fleet 8.19.16, lab CA + Fleet cert (SAN IP:10.0.0.10), 30-day ILM
+- [ ] 01-04-PLAN.md — CALDERA 5.3.0 on caldera-vm, snapshot workflow + reset_range.sh scaffold, all 4 Phase 1 gates
 
 ---
 
@@ -125,7 +130,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Proxmox Foundation + SIEM Node | 0/? | Not started | - |
+| 1. Proxmox Foundation + SIEM Node | 0/4 | Planned | - |
 | 2. Windows Target Network | 0/? | Not started | - |
 | 3. Full Telemetry Pipeline + Reset Mechanism | 0/? | Not started | - |
 | 4. Red Team Platform + ML Baseline | 0/? | Not started | - |
