@@ -108,5 +108,73 @@ None — discussion stayed within Phase 1 scope.
 
 ---
 
+## Session 2026-06-17 Decisions
+
+These decisions were reached conversationally on 2026-06-17 after the initial discuss-phase. They update or extend D-01..D-13 above and MUST be in scope for any plan generated for this phase.
+
+### VM Resource Revisions
+
+- **D-NEW-01:** `elastic-vm` RAM upgraded to **14 GB** (was 12 GB in D-07). Host 1 is dedicated solely to elastic-vm — no co-tenants. 14 GB gives Elasticsearch heap 8 GB (D-08 unchanged), OS page cache ~4 GB, Kibana ~1 GB, Fleet Server ~512 MB, with ~512 MB headroom for Proxmox QEMU overhead. 2 GB slack under the 16 GB physical ceiling is the acceptable minimum for this configuration.
+
+- **D-NEW-02:** `caldera-vm` relocated from Host 1 to **Host 6** (alongside kali). Host 1 is now exclusively elastic-vm. Operator benefit: red-team operator accesses caldera-vm and kali from one physical host — clean mental model.
+
+- **D-NEW-03:** **ws02 added** — second Windows 10 workstation VM (4 GB RAM, 60 GB disk, Host 4). Required because APT29 Scenario 1, APT29 Scenario 2, and Wizard Spider Scenario 1 all specify ≥2 victim workstations. Original plan only included ws01; ws02 closes this gap. Host 4 carries ws01 (4 GB) + ws02 (4 GB) = 8 GB total, within 16 GB physical.
+
+- **D-NEW-04:** `exchange01` RAM upgraded to **10 GB** (was 8 GB). Exchange Server 2019 benefits from extra heap for EWS request processing. Host 3 is dedicated to exchange01 — 10 GB leaves 6 GB headroom on a 16 GB host, well within limits.
+
+### Host Layout (Final — Option B)
+
+- **D-NEW-05:** **Option B selected** — `dc01` (4 GB RAM, 60 GB disk) and `sql01` (5 GB RAM, 80 GB disk) co-located on **Host 2**. Combined = 9 GB RAM, within 16 GB physical. Trade-off accepted: in a controlled lab, AD + SQL on same host is acceptable because emulation runs are sequential (not concurrent high-load), and this frees Host 5 for a future IDS sensor.
+
+- **D-NEW-06:** **Host 5 = SPARE / future IDS sensor** (Suricata or Zeek). Not provisioned in Phase 1 or Phase 2. Reserved for Phase 5+ when network-based detection is added alongside Elastic Defend. An IDS sensor on the TARGET VLAN would complement Packetbeat and enable rule-based network detections independent of endpoint telemetry.
+
+### IP Address Plan (Locked)
+
+- **D-NEW-07:** **TARGET network IPs (10.10.10.0/24):**
+
+  | VM | IP |
+  |----|-----|
+  | dc01 | 10.10.10.10 |
+  | exchange01 | 10.10.10.20 |
+  | sql01 | 10.10.10.30 |
+  | ws01 | 10.10.10.40 |
+  | ws02 | 10.10.10.50 |
+  | kali | 10.10.10.200 |
+
+  Rationale: dc01 gets the lowest address (.10) because domain join requires DC reachable before Exchange and SQL join the domain. kali at .200 is visually separated from victim VMs in any SIEM dashboard.
+
+- **D-NEW-08:** **MGMT network IPs (10.0.0.0/24):**
+
+  | VM | IP | Note |
+  |----|-----|------|
+  | elastic-vm | 10.0.0.10 | LOCKED — Fleet Server SAN includes IP:10.0.0.10 (D-12) |
+  | caldera-vm | 10.0.0.20 | |
+  | dc01 | 10.0.0.11 | |
+  | exchange01 | 10.0.0.12 | |
+  | sql01 | 10.0.0.13 | |
+  | ws01 | 10.0.0.14 | |
+  | ws02 | 10.0.0.15 | |
+  | kali | 10.0.0.16 | |
+
+  elastic-vm .10 is locked by D-12 (Fleet Server cert SAN `IP:10.0.0.10`). Changing this IP would require regenerating the CA and re-enrolling all agents.
+
+### Physical Host Layout (Final)
+
+- **D-NEW-09:** **Physical host assignments:**
+
+  | Host | VMs | Total RAM | Disk |
+  |------|-----|-----------|------|
+  | Host 1 | elastic-vm (Ubuntu 22.04) | 14 GB | 170 GB thin |
+  | Host 2 | dc01 (WS2019) + sql01 (WS2019 + SQL 2019) | 9 GB | 60 + 80 GB thin |
+  | Host 3 | exchange01 (WS2019 + Exchange 2019) | 10 GB | 120 GB thin |
+  | Host 4 | ws01 (Win10) + ws02 (Win10) | 8 GB | 60 + 60 GB thin |
+  | Host 5 | SPARE — future IDS (Suricata/Zeek) | — | — |
+  | Host 6 | caldera-vm (Ubuntu 22.04) + kali (Kali 2024.x) | 6 + 4 GB | 40 + 80 GB thin |
+
+  All disk values are thin-provisioned on LVM-thin (D-04). Physical disk per host is 220 GB; all thin allocations have comfortable headroom.
+
+---
+
 *Phase: 1-Proxmox Foundation + SIEM Node*
 *Context gathered: 2026-06-08*
+*Updated: 2026-06-17 (D-NEW-01..D-NEW-09 added)*
