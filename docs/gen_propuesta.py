@@ -276,7 +276,6 @@ skills = [
     [P('Red Team / Emulacion APT', tc_b), P('Ejecucion de planes de emulacion MITRE, operacion de frameworks C2, movimiento lateral', tc), P('CALDERA 5.x · Metasploit · Mimikatz', tc)],
     [P('Threat Intelligence', tc_b), P('Mapeo de TTPs en el framework MITRE ATT&CK, analisis de emulation plans CTID', tc), P('ATT&CK Navigator · CTID Library', tc)],
     [P('Analisis forense', tc_b), P('Interpretacion de Sysmon EventIDs, trazas de red, Windows Event Log y process trees', tc), P('Packetbeat · Sysmon · Kibana Discover', tc)],
-    [P('Machine Learning aplicado', tc_b), P('Configuracion de anomaly detection jobs sin datos etiquetados, interpretacion de resultados', tc), P('Elastic ML (basic tier)', tc)],
     [P('Documentacion tecnica', tc_b), P('Redaccion de guias de setup, runbooks APT y reportes de deteccion en formato publicable', tc), P('GitHub Pages · Markdown', tc)],
 ]
 t4 = Table(skills, colWidths=[3.8*cm, 8.4*cm, 4.5*cm])
@@ -311,10 +310,6 @@ reqs = [
      P('Acceso al Laboratorio #2 de <b>lunes a sabado hasta las 22:00 h</b>. Las sesiones '
        'de emulacion de ataques requieren bloques continuos de 3–4 horas.', tc),
      P('CRITICO', crit)],
-    [P('Energia electrica\nestable', tc_b),
-     P('Los 24 servidores operan de forma continua. Se recomienda proteccion UPS o '
-       'regulador de voltaje, especialmente para el nodo SIEM (elastic-vm).', tc),
-     P('Alto', high)],
     [P('Conectividad LAN\n(gestion)', tc_b),
      P('Acceso a la red LAN de la facultad unicamente para descarga inicial de ISOs y '
        'actualizaciones. Las redes de ataque TARGET son <b>completamente aisladas</b> '
@@ -323,10 +318,6 @@ reqs = [
     [P('Permisos de\nadministrador', tc_b),
      P('Acceso root en las 24 maquinas fisicas para la instalacion de Proxmox VE '
        'y configuracion de red.', tc),
-     P('Alto', high)],
-    [P('Docente asesor', tc_b),
-     P('El proyecto requiere un docente de la especialidad que valide el avance semanal '
-       'y endose los entregables finales para posible publicacion.', tc),
      P('Alto', high)],
     [P('Nota de seguridad', tc_b),
      P('<i>Todos los ataques se ejecutan dentro de la red aislada del Cyber Range. Ningun '
@@ -345,8 +336,6 @@ story.append(section('8', 'Entregables del Proyecto'))
 story.append(Spacer(1, 0.2*cm))
 for title, desc in [
     ('Cyber Range funcional', '4 instancias independientes (una por grupo) completamente operativas al cierre del proyecto.'),
-    ('Dataset FullAPT-2025', 'Corpus de telemetria Sysmon + Packetbeat + Elastic Defend de los 3 escenarios APT, '
-     'indexado en Elasticsearch con naming por run (apt29-run1-*, oilrig-run1-*, etc.).'),
     ('Reglas de deteccion', 'Set de reglas personalizadas en Elastic SIEM para los TTPs mas relevantes, '
      'documentadas con la tecnica ATT&CK correspondiente.'),
     ('Informe tecnico por grupo', 'Documento de 10–15 paginas: arquitectura, metodologia, tabla de resultados '
