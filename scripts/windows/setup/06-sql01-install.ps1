@@ -134,7 +134,14 @@ BEGIN
     );
 END
 "@
-    sqlcmd -S localhost -Q $createDB -b
+    # Write to temp file so sqlcmd -i processes GO batch separators correctly.
+    # sqlcmd -Q does NOT recognize GO as a batch terminator; -i mode does.
+    $createDBPath = "C:\Temp\create_sitedata.sql"
+    $createDB | Out-File -FilePath $createDBPath -Encoding ASCII
+    sqlcmd -S localhost -i $createDBPath -b
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "sitedata schema creation failed (sqlcmd exit $LASTEXITCODE). Aborting."
+    }
     Write-Host "[PASS] sitedata database and minfac table created"
 
     # ─── Part D: Import minfac.csv using SqlBulkCopy (quoted fields safe) ────
