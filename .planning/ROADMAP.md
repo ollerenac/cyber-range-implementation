@@ -34,11 +34,11 @@
   3. Operator opens Fleet UI and sees an active Fleet Server with a valid enrollment token ready to copy
   4. A test VM on vmbr1 cannot ping 8.8.8.8 or any host LAN address — network isolation confirmed
 
-**Plans:** 4 plans (4 waves)
+**Plans:** 1/4 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Proxmox networking foundation: vmbr0/vmbr1 bridges on all 6 hosts, VLAN 10 switch config, LVM-thin + isolation gates
+- [x] 01-01-PLAN.md — Proxmox networking foundation: vmbr0/vmbr1 bridges on all 6 hosts, VLAN 10 switch config, LVM-thin + isolation gates
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -162,7 +162,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Proxmox Foundation + SIEM Node | 0/4 | Planned | - |
+| 1. Proxmox Foundation + SIEM Node | 1/4 | In Progress|  |
 | 2. Windows Target Network | 0/? | Not started | - |
 | 3. Full Telemetry Pipeline + Reset Mechanism | 0/? | Not started | - |
 | 4. Red Team Platform + ML Baseline | 0/? | Not started | - |

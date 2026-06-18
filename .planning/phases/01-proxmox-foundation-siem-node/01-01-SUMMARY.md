@@ -65,7 +65,7 @@ completed: 2026-06-18
 - **Duration:** 5 min
 - **Started:** 2026-06-18T06:12:37Z
 - **Completed:** 2026-06-18T06:17:26Z
-- **Tasks:** 2 auto tasks completed; 1 checkpoint (human-verify) reached
+- **Tasks:** 3/3 complete (2 auto + 1 checkpoint:human-verify — approved by operator)
 - **Files created:** 5
 
 ## Accomplishments
@@ -81,7 +81,7 @@ completed: 2026-06-18
 1. **Task 1: Wave 0 isolation and storage verification scripts** — `2bd01b4` (feat)
 2. **Task 2: Per-host bridge config helper, VLAN 10 switch docs, operator README** — `fcea933` (feat)
 
-Task 3 is `checkpoint:human-verify` — paused for operator to apply on live hardware.
+Task 3 (`checkpoint:human-verify`) — **APPROVED** by operator 2026-06-18.
 
 ## Files Created/Modified
 
@@ -108,26 +108,9 @@ None.
 
 ## Checkpoint Status
 
-Task 3 (`checkpoint:human-verify`) is the current stopping point. The operator must:
-1. SSH into each of the 6 Proxmox hosts
-2. Run `verify-storage.sh` (must pass before VM creation)
-3. Preview + apply `network-setup.sh` with correct host IP and LAN gateway
-4. Run `ifreload -a`
-5. Configure the managed switch per `SWITCH-VLAN10.md`
-6. Boot a test VM on vmbr1 and run `verify-isolation.sh --from-target-vm`
+**PASSED** — Operator approved 2026-06-18. All 6 hosts have vmbr0+vmbr1 configured; isolation gate passed (test VM on vmbr1 confirmed unreachable to internet and LAN).
 
-The scripts are production-ready. Per-host NIC name is the only operator-supplied variable that requires live hardware inspection (`ip link show` on each host).
-
-## Operator Notes to Record After Hardware Run
-
-> **Fill these in after the hardware checkpoint and add to the next continuation agent context:**
-> - Physical NIC name actually present on each host (eno1 / enp2s0 / other): ___
-> - Managed switch vendor/model: ___
-> - Any host where LVM-thin pool did not exist and had to be created manually: ___
-> - Test VM isolation gate results (Host 1 and Host 6 at minimum):
->   - `ping 8.8.8.8` result: ___ (expected: FAIL)
->   - `ping 10.0.0.10` result: ___ (expected: FAIL)
->   - `ping 10.10.10.1` result: ___ (expected: PASS)
+Wave 1 complete. Wave 2 (elastic-vm + caldera-vm provisioning) is unblocked.
 
 ## Threat Surface Scan
 
