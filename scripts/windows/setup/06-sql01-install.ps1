@@ -198,12 +198,18 @@ END
     $conn.Close()
 
     $rowCount = (sqlcmd -S localhost -Q "SELECT COUNT(*) FROM sitedata.dbo.minfac" -h -1).Trim()
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Row count query failed (sqlcmd exit $LASTEXITCODE) — minfac import may be incomplete."
+    }
     Write-Host "[PASS] minfac import complete: $rowCount rows loaded"
 
     # ─── Part E: Create sitedata backup (D-07) ───────────────────────────────
     Write-Host "[i] Part E: Backup sitedata database..." -ForegroundColor Cyan
     $BackupPath = "C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Backup\sitedata.bak"
     sqlcmd -S localhost -Q "BACKUP DATABASE sitedata TO DISK='$BackupPath' WITH FORMAT, INIT, COMPRESSION;" -b
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "BACKUP DATABASE failed (sqlcmd exit $LASTEXITCODE). Do not use this backup as a restore point."
+    }
     Write-Host "[PASS] sitedata backup created at $BackupPath"
 
     # ─── Part F: LAB\tous SQL login + db_owner role (Pitfall 7 mitigation) ───
@@ -217,6 +223,9 @@ IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = 'LAB\tous')
 EXEC sp_addrolemember 'db_owner', 'LAB\tous';
 ALTER AUTHORIZATION ON DATABASE::sitedata TO [LAB\tous];
 "@
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "LAB\tous login/role setup failed (sqlcmd exit $LASTEXITCODE). OilRig scenario requires db_owner on sitedata."
+    }
     Write-Host "[PASS] LAB\tous has db_owner role in sitedata"
 
     # ─── Part G: SQL Admins group → Local Administrators ─────────────────────
