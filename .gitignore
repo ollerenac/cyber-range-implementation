@@ -2,6 +2,9 @@
 cv_docs/
 BRIEF.md
 
+# Claude planning artifacts — internal, sensitive
+.planning/
+
 # Third-party library (has its own git repo)
 github/
 
