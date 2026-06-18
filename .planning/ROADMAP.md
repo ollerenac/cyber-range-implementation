@@ -108,8 +108,12 @@ Plans:
   4. Operator runs `./reset_range.sh` from the control node — within 5 minutes all four VMs are back online, Fleet shows them Healthy, and AD domain authentication succeeds without manual intervention
   5. Kali can reach the TARGET subnet and confirm CALDERA agent binary deploys and phones home to elastic-vm:8853 on a test run
 
-**Plans:** TBD
-**UI hint**: yes
+**Plans:** 4 plans in 3 waves
+Plans:
+- [ ] 03-01-PLAN.md — Kali VM provisioning (VMID 601, Host 6, dual-NIC) + elastic-vm SSH keys to all 4 Proxmox hosts
+- [ ] 03-02-PLAN.md — Fleet policies (windows-target + kali-linux, DETECT mode) + Sysmon XML merge + 09-elastic-agent.ps1
+- [ ] 03-03-PLAN.md — Elastic Agent enrollment: WinRM loop (5 Windows VMs) + Kali SSH enrollment; 6 agents Healthy
+- [ ] 03-04-PLAN.md — reset_range.sh completion + take-snapshot.sh + verify-phase3.sh; clean_state snapshot + full validation
 
 ---
 
