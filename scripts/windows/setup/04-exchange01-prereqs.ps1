@@ -49,8 +49,12 @@ switch ($Step) {
         )
 
         $result = Install-WindowsFeature -Name $Features -IncludeManagementTools -Restart
+        if (-not $result.Success) {
+            Write-Fail "Install-WindowsFeature failed (ExitCode: $($result.ExitCode)). Check Event Log for details."
+            exit 1
+        }
         if ($result.RestartNeeded -eq "Yes") {
-            Write-OK "Step 1 complete — Windows features installed. System will reboot now."
+            Write-OK "Step 1 complete — Windows features installed (RestartNeeded=Yes). System will reboot now."
             Write-Step "After reboot: run Step 2."
         } else {
             Write-OK "Step 1 complete — Windows features installed (no reboot needed)."
