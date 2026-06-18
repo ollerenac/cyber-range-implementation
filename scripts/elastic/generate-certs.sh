@@ -31,6 +31,7 @@
 #   /etc/elasticsearch/certs/kibana.key            — Kibana key PEM (chmod 600)
 
 set -euo pipefail
+umask 077  # default all new files to 600 (owner read/write only)
 
 CERTS_DIR="/etc/elasticsearch/certs"
 CERTUTIL="/usr/share/elasticsearch/bin/elasticsearch-certutil"
@@ -60,7 +61,9 @@ else
   "${CERTUTIL}" ca \
     --out "${CERTS_DIR}/elastic-stack-ca.p12" \
     --pass ""
-  echo "[OK] Lab CA generated: ${CERTS_DIR}/elastic-stack-ca.p12"
+  chmod 600 "${CERTS_DIR}/elastic-stack-ca.p12"
+  chown root:root "${CERTS_DIR}/elastic-stack-ca.p12"
+  echo "[OK] Lab CA generated: ${CERTS_DIR}/elastic-stack-ca.p12 (chmod 600)"
 fi
 
 # ─── Step 2: Export CA certificate as PEM (D-13 Phase 3 distribution anchor) ─
@@ -95,7 +98,9 @@ else
     --ip 10.0.0.10 \
     --out "${CERTS_DIR}/fleet-server.p12" \
     --pass ""
-  echo "[OK] Fleet Server cert generated: ${CERTS_DIR}/fleet-server.p12"
+  chmod 600 "${CERTS_DIR}/fleet-server.p12"
+  chown root:root "${CERTS_DIR}/fleet-server.p12"
+  echo "[OK] Fleet Server cert generated: ${CERTS_DIR}/fleet-server.p12 (chmod 600)"
 fi
 
 # ─── Step 4: Export Fleet Server cert + key as PEM (elastic-agent uses PEM) ──
@@ -161,7 +166,9 @@ else
     --ip 10.0.0.10 \
     --out "${CERTS_DIR}/kibana.p12" \
     --pass ""
-  echo "[OK] Kibana cert generated: ${CERTS_DIR}/kibana.p12"
+  chmod 600 "${CERTS_DIR}/kibana.p12"
+  chown root:root "${CERTS_DIR}/kibana.p12"
+  echo "[OK] Kibana cert generated: ${CERTS_DIR}/kibana.p12 (chmod 600)"
 fi
 
 # Export Kibana cert + key as PEM (Kibana uses PEM in kibana.yml)
