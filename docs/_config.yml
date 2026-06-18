@@ -1,0 +1,15 @@
+title: Cyber Range — APT Emulation & Intrusion Detection
+description: >-
+  Virtualized Cyber Range emulating APT29, OilRig, and Wizard Spider using
+  MITRE CALDERA + Elastic Stack (SIEM, EDR, ML anomaly detection).
+  Thesis project — FIEE-UNI (Trabajo de Suficiencia Profesional).
+
+url: "https://ollerenac.github.io"
+baseurl: "/titulacion"
+
+theme: jekyll-theme-cayman
+
+# Exclude non-site files
+exclude:
+  - gen_propuesta.py
+  - "*.pdf"
