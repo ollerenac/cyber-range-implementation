@@ -95,7 +95,7 @@ REG.exe QUERY HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wuauserv /v S
 # Set AutoUpdate to not check for updates
 $AUSettings = (New-Object -com "Microsoft.Update.AutoUpdate").Settings
 $AUSettings.NotificationLevel = 1
-$AUSettings.Save
+$AUSettings.Save()   # parentheses required — this is a method call, not a property access
 
 Write-Host "[i] Windows Update service disabled and NotificationLevel=1 (no auto-check)"
 
