@@ -172,6 +172,15 @@ if ($Target -eq "ws01") {
 
     Write-Host "[3/4] Granting LAB\judy full control on C:\Windows (D-11 — Wizard Spider scenario)"
 
+    # Hostname guard: takeown /r on C:\Windows is irreversible without a snapshot rollback.
+    # Verify we are actually on WS01 before running — a mis-targeted PSSession (e.g.
+    # connecting to dc01's MGMT IP by mistake) would execute this on the domain controller.
+    $actualHost = $env:COMPUTERNAME.ToUpper()
+    if ($actualHost -ne "WS01") {
+        Write-Error "ABORT: D-11 takeown/icacls must only run on WS01. This host is '$actualHost'. Check your PSSession target IP."
+        exit 1
+    }
+
     Write-Host "[i] Running takeown on C:\Windows (recursive — this takes several minutes)..."
     takeown /f C:\Windows /r /d Y 2>&1 | Out-Null
     Write-Host "[i] takeown complete"
