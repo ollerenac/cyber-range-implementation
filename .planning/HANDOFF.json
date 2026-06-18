@@ -1,10 +1,10 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-18T00:02:32.167Z",
+  "timestamp": "2026-06-18T06:25:41.757Z",
   "phase": "01",
   "phase_name": "Proxmox Foundation + SIEM Node",
   "phase_dir": ".planning/phases/01-proxmox-foundation-siem-node",
-  "plan": 0,
+  "plan": 2,
   "task": 0,
   "total_tasks": 9,
   "status": "paused",
@@ -13,29 +13,27 @@
     {"id": 2, "name": "Update 01-CONTEXT.md with 9 session decisions D-NEW-01..D-NEW-09", "status": "done", "commit": "97c7816"},
     {"id": 3, "name": "gsd-plan-phase 1: research (8.19.16 version pin, TLS SAN, CALDERA port)", "status": "done", "commit": "105eaca"},
     {"id": 4, "name": "gsd-plan-phase 1: 4 PLAN.md files written (01-01..01-04), verified, committed", "status": "done", "commit": "632ea5e"},
-    {"id": 5, "name": "Proposal PDF propuesta-cyber-range-alumnos.pdf", "status": "done", "commit": "0c5412a"}
+    {"id": 5, "name": "Proposal PDF propuesta-cyber-range-alumnos.pdf", "status": "done", "commit": "0c5412a"},
+    {"id": 6, "name": "Execute Phase 1 Wave 1 — hypervisor networking (01-01-PLAN.md) — COMPLETE", "status": "done", "commit": "797cae4"}
   ],
   "remaining_tasks": [
-    {"id": 6, "name": "Execute Phase 1 Wave 1 — hypervisor networking (01-01-PLAN.md)", "status": "not_started"},
     {"id": 7, "name": "Execute Phase 1 Wave 2 — control VMs elastic-vm + caldera-vm (01-02-PLAN.md)", "status": "not_started"},
     {"id": 8, "name": "Execute Phase 1 Wave 3 — SIEM stack: ES 8.19.16 + Kibana + Fleet Server (01-03-PLAN.md)", "status": "not_started"},
     {"id": 9, "name": "Execute Phase 1 Wave 4 — CALDERA 5.3.0 + snapshot/reset verification (01-04-PLAN.md)", "status": "not_started"}
   ],
   "blockers": [],
   "human_actions_pending": [
-    {"action": "Physical lab access required for all 4 execution waves", "context": "All 4 plans are autonomous:false with human-verify checkpoints — requires SSH to physical Proxmox hosts and browser access to 10.0.0.10:5601", "blocking": true},
-    {"action": "Update REQUIREMENTS.md INFRA-02 version reference", "context": "Still reads '8.17.x' — should be '8.19.16'. Non-blocking for execution but causes confusion for future agents.", "blocking": false},
-    {"action": "Update CLAUDE.md Elastic stack version entries", "context": "Technology stack table still shows '8.17.x (ships with Kali)'. Should be '8.19.16'. Non-blocking.", "blocking": false}
+    {"action": "Physical lab access required for Waves 2-4", "context": "All remaining plans are autonomous:false with human-verify checkpoints. Wave 2 needs qm create on Host 1 + Host 6. Wave 3 needs SSH to elastic-vm. Wave 4 needs SSH to caldera-vm.", "blocking": true},
+    {"action": "Update REQUIREMENTS.md INFRA-02 version reference", "context": "Still reads '8.17.x' — should be '8.19.16'. Non-blocking.", "blocking": false},
+    {"action": "Update CLAUDE.md Elastic stack version entries", "context": "Technology stack table still shows '8.17.x'. Should be '8.19.16'. Non-blocking.", "blocking": false}
   ],
   "decisions": [
-    {"decision": "Elasticsearch/Kibana/elastic-agent pinned to 8.19.16 (NOT 8.17.x — EOL August 2025)", "rationale": "Live-verified from elastic apt repo during research phase. 8.17.x reached end-of-life. All 4 plans use 8.19.16.", "phase": "01"},
-    {"decision": "CALDERA TCP contact port: app.contact.tcp 0.0.0.0:8853 set explicitly in conf/local.yml", "rationale": "CONTEXT.md specifies 8853 but CALDERA 5.x default is 7010. Plans set 8853 explicitly and verify live ports.", "phase": "01"},
-    {"decision": "vmbr1 uses eno1.10 VLAN sub-interface (NOT bare eno1)", "rationale": "Cross-host TARGET connectivity requires VLAN 10 tagged trunk port. bare eno1 would bridge TARGET to LAN — isolation failure.", "phase": "01"},
-    {"decision": "All D-01..D-13 and D-NEW-01..D-NEW-09 cited by ID in plan must_haves.truths", "rationale": "Decision coverage gate required explicit D-ID strings. Added to truths sections of 01-01, 01-02, 01-04.", "phase": "01"},
-    {"decision": "Host layout: Host1=elastic-vm(14GB) | Host2=dc01+sql01 | Host3=exchange01(10GB) | Host4=ws01+ws02 | Host5=SPARE | Host6=caldera+kali", "rationale": "Option B — dc01+sql01 co-located frees Host5 for future IDS sensor.", "phase": "01"},
-    {"decision": "IPs locked: elastic-vm=10.0.0.10 (MGMT, Fleet SAN), caldera-vm=10.0.0.20; TARGET: dc01=10.10.10.10, exchange01=.20, sql01=.30, ws01=.40, ws02=.50, kali=.200", "rationale": "D-NEW-07/D-NEW-08 — elastic-vm .10 is immutable after Fleet cert is signed.", "phase": "01"}
+    {"decision": "Wave 1 complete — vmbr0+vmbr1 confirmed on all 6 hosts, isolation gate passed", "rationale": "Operator approved 2026-06-18. eno1.10 VLAN sub-interface confirmed working.", "phase": "01"},
+    {"decision": "Elasticsearch/Kibana/elastic-agent pinned to 8.19.16 (NOT 8.17.x — EOL August 2025)", "rationale": "Live-verified from elastic apt repo during research phase.", "phase": "01"},
+    {"decision": "CALDERA TCP contact port: app.contact.tcp 0.0.0.0:8853 set explicitly in conf/local.yml", "rationale": "CONTEXT.md specifies 8853 but CALDERA 5.x default is 7010.", "phase": "01"},
+    {"decision": "vmbr1 uses eno1.10 VLAN sub-interface (NOT bare eno1) — CONFIRMED WORKING", "rationale": "Operator applied and gate passed. Option A from RESEARCH.md.", "phase": "01"}
   ],
   "uncommitted_files": [],
-  "next_action": "/gsd:execute-phase 1 — Wave 1 first (01-01-PLAN.md: hypervisor networking). Requires physical lab access.",
-  "context_notes": "Phase 1 is FULLY PLANNED as of 2026-06-17. Planning workflow ran research (gsd-phase-researcher), planner (gsd-planner, opus), and plan-checker (gsd-plan-checker) with one iteration fix (RESEARCH.md heading). 4 plans committed at 632ea5e. All 22 locked decisions covered. Version upgrade from 8.17.x to 8.19.16 is the key discovery this session. All 4 execution plans are autonomous:false — they require a human operator at each wave checkpoint."
+  "next_action": "/gsd:execute-phase 1 — Wave 2 next (01-02-PLAN.md: qm create elastic-vm on Host 1 + caldera-vm on Host 6). Scripts ready at scripts/proxmox/create-elastic-vm.sh and create-caldera-vm.sh after executor runs.",
+  "context_notes": "Wave 1 complete as of commit 797cae4. The gsd-executor subagent wrote 5 scripts to scripts/proxmox/ (tasks 1+2), committed in worktree, merged back. Operator applied on hardware and approved. Wave 2 executor will write create-elastic-vm.sh, create-caldera-vm.sh, cloud-init-user-data.yaml — then operator must run qm create on Host 1 and Host 6. elastic-vm IP 10.0.0.10 is LOCKED (Fleet cert SAN). Context was 68% when pausing."
 }
