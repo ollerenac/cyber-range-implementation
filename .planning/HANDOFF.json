@@ -1,41 +1,41 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-17T08:29:00.000Z",
+  "timestamp": "2026-06-18T00:02:32.167Z",
   "phase": "01",
   "phase_name": "Proxmox Foundation + SIEM Node",
   "phase_dir": ".planning/phases/01-proxmox-foundation-siem-node",
   "plan": 0,
   "task": 0,
-  "total_tasks": 0,
+  "total_tasks": 9,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "gsd-new-project: PROJECT.md + REQUIREMENTS.md + ROADMAP.md + STATE.md", "status": "done", "commit": "prior session"},
-    {"id": 2, "name": "gsd-discuss-phase 1: 4 gray areas discussed, 01-CONTEXT.md written", "status": "done", "commit": "6aa859c"},
-    {"id": 3, "name": "quick: VM distribution across 6 physical hosts (Option B selected)", "status": "done", "commit": "session — NOT YET in CONTEXT.md"},
-    {"id": 4, "name": "quick: APT cross-infra analysis — ws02 identified as missing VM", "status": "done", "commit": "session — NOT YET in CONTEXT.md"},
-    {"id": 5, "name": "quick: propuesta-cyber-range-alumnos.pdf created", "status": "done", "commit": "0c5412a"}
+    {"id": 1, "name": "gsd-discuss-phase 1: 01-CONTEXT.md with D-01..D-13", "status": "done", "commit": "6aa859c"},
+    {"id": 2, "name": "Update 01-CONTEXT.md with 9 session decisions D-NEW-01..D-NEW-09", "status": "done", "commit": "97c7816"},
+    {"id": 3, "name": "gsd-plan-phase 1: research (8.19.16 version pin, TLS SAN, CALDERA port)", "status": "done", "commit": "105eaca"},
+    {"id": 4, "name": "gsd-plan-phase 1: 4 PLAN.md files written (01-01..01-04), verified, committed", "status": "done", "commit": "632ea5e"},
+    {"id": 5, "name": "Proposal PDF propuesta-cyber-range-alumnos.pdf", "status": "done", "commit": "0c5412a"}
   ],
   "remaining_tasks": [
-    {"id": 6, "name": "Update 01-CONTEXT.md with 9 new session decisions (all in_context_md:false below) — MUST DO BEFORE PLANNING", "status": "not_started"},
-    {"id": 7, "name": "gsd-plan-phase 1: decompose Phase 1 into executable plans", "status": "not_started"}
+    {"id": 6, "name": "Execute Phase 1 Wave 1 — hypervisor networking (01-01-PLAN.md)", "status": "not_started"},
+    {"id": 7, "name": "Execute Phase 1 Wave 2 — control VMs elastic-vm + caldera-vm (01-02-PLAN.md)", "status": "not_started"},
+    {"id": 8, "name": "Execute Phase 1 Wave 3 — SIEM stack: ES 8.19.16 + Kibana + Fleet Server (01-03-PLAN.md)", "status": "not_started"},
+    {"id": 9, "name": "Execute Phase 1 Wave 4 — CALDERA 5.3.0 + snapshot/reset verification (01-04-PLAN.md)", "status": "not_started"}
   ],
   "blockers": [],
   "human_actions_pending": [
-    {"action": "Confirm hardware availability", "context": "4 groups x 6 machines (20 vCPU, 16 GB RAM, 220 GB disk) + 4 switches 802.1Q + ~32 cables Cat5e 3m", "blocking": false}
+    {"action": "Physical lab access required for all 4 execution waves", "context": "All 4 plans are autonomous:false with human-verify checkpoints — requires SSH to physical Proxmox hosts and browser access to 10.0.0.10:5601", "blocking": true},
+    {"action": "Update REQUIREMENTS.md INFRA-02 version reference", "context": "Still reads '8.17.x' — should be '8.19.16'. Non-blocking for execution but causes confusion for future agents.", "blocking": false},
+    {"action": "Update CLAUDE.md Elastic stack version entries", "context": "Technology stack table still shows '8.17.x (ships with Kali)'. Should be '8.19.16'. Non-blocking.", "blocking": false}
   ],
   "decisions": [
-    {"decision": "D-01 to D-13: VLAN 802.1Q, LVM-thin, ES heap 8g, Lab CA, Fleet SAN IP:10.0.0.10", "rationale": "Original discuss-phase decisions", "phase": "01", "in_context_md": true},
-    {"decision": "elastic-vm RAM: 14 GB (was 12 GB) — solo en Host 1 sin co-tenants", "rationale": "Mas page cache OS; 2 GB sobrante para Proxmox overhead es limite aceptable con 16 GB fisicos", "phase": "01", "in_context_md": false},
-    {"decision": "caldera-vm movido a Host 6 junto con kali", "rationale": "Host 1 exclusivo para elastic-vm; caldera+kali en mismo host es limpio para operador red team", "phase": "01", "in_context_md": false},
-    {"decision": "ws02 agregado: segunda workstation Windows 10", "rationale": "APT29 S1, S2 y Wizard Spider requieren 2 workstations; plan original solo tenia ws01", "phase": "01", "in_context_md": false},
-    {"decision": "exchange01: 10 GB RAM (subido de 8 GB)", "rationale": "Exchange 2019 se beneficia del extra; host de 16 GB lo permite con margen", "phase": "01", "in_context_md": false},
-    {"decision": "Option B: dc01 (4 GB) + sql01 (5 GB) co-locados en Host 2", "rationale": "Libera Host 5 como SPARE/IDS; trade-off aceptable en lab controlado", "phase": "01", "in_context_md": false},
-    {"decision": "Host 5: SPARE / futuro sensor IDS de red (Suricata/Zeek)", "rationale": "IDS de red complementa Elastic Defend y Packetbeat; mayor riqueza en tabla de resultados", "phase": "01", "in_context_md": false},
-    {"decision": "IPs TARGET 10.10.10.0/24: dc01=.10, exchange01=.20, sql01=.30, ws01=.40, ws02=.50, kali=.200", "rationale": "DC .10 fija antes de que Exchange/SQL unan dominio; kali .200 separa atacante", "phase": "01", "in_context_md": false},
-    {"decision": "IPs MGMT 10.0.0.0/24: elastic-vm=.10 (bloqueado), caldera-vm=.20, dc01=.11, exchange01=.12, sql01=.13, ws01=.14, ws02=.15, kali=.16", "rationale": "elastic-vm .10 bloqueado por Fleet SAN (D-12); resto en secuencia logica", "phase": "01", "in_context_md": false},
-    {"decision": "Layout fisico: Host1=elastic-vm(14GB) | Host2=dc01+sql01 | Host3=exchange01(10GB) | Host4=ws01+ws02 | Host5=SPARE | Host6=caldera+kali", "rationale": "Maximiza SIEM, Exchange aislado, IDS slot libre", "phase": "01", "in_context_md": false}
+    {"decision": "Elasticsearch/Kibana/elastic-agent pinned to 8.19.16 (NOT 8.17.x — EOL August 2025)", "rationale": "Live-verified from elastic apt repo during research phase. 8.17.x reached end-of-life. All 4 plans use 8.19.16.", "phase": "01"},
+    {"decision": "CALDERA TCP contact port: app.contact.tcp 0.0.0.0:8853 set explicitly in conf/local.yml", "rationale": "CONTEXT.md specifies 8853 but CALDERA 5.x default is 7010. Plans set 8853 explicitly and verify live ports.", "phase": "01"},
+    {"decision": "vmbr1 uses eno1.10 VLAN sub-interface (NOT bare eno1)", "rationale": "Cross-host TARGET connectivity requires VLAN 10 tagged trunk port. bare eno1 would bridge TARGET to LAN — isolation failure.", "phase": "01"},
+    {"decision": "All D-01..D-13 and D-NEW-01..D-NEW-09 cited by ID in plan must_haves.truths", "rationale": "Decision coverage gate required explicit D-ID strings. Added to truths sections of 01-01, 01-02, 01-04.", "phase": "01"},
+    {"decision": "Host layout: Host1=elastic-vm(14GB) | Host2=dc01+sql01 | Host3=exchange01(10GB) | Host4=ws01+ws02 | Host5=SPARE | Host6=caldera+kali", "rationale": "Option B — dc01+sql01 co-located frees Host5 for future IDS sensor.", "phase": "01"},
+    {"decision": "IPs locked: elastic-vm=10.0.0.10 (MGMT, Fleet SAN), caldera-vm=10.0.0.20; TARGET: dc01=10.10.10.10, exchange01=.20, sql01=.30, ws01=.40, ws02=.50, kali=.200", "rationale": "D-NEW-07/D-NEW-08 — elastic-vm .10 is immutable after Fleet cert is signed.", "phase": "01"}
   ],
   "uncommitted_files": [],
-  "next_action": "PRIMERO: actualizar 01-CONTEXT.md con las 9 decisiones in_context_md:false. LUEGO: /gsd-plan-phase 1",
-  "context_notes": "discuss-phase 1 completo (D-01..D-13 en CONTEXT.md). Esta sesion genero 9 decisiones extra en discusion conversacional SIN escribir a CONTEXT.md: host layout Option B, ws02, RAM updates, IPs TARGET y MGMT. El planificador NECESITA estas antes de escribir PLAN.md. PDF propuesta alumnos committida en docs/. Repo limpio. Contexto sesion al 70% al pausar."
+  "next_action": "/gsd:execute-phase 1 — Wave 1 first (01-01-PLAN.md: hypervisor networking). Requires physical lab access.",
+  "context_notes": "Phase 1 is FULLY PLANNED as of 2026-06-17. Planning workflow ran research (gsd-phase-researcher), planner (gsd-planner, opus), and plan-checker (gsd-plan-checker) with one iteration fix (RESEARCH.md heading). 4 plans committed at 632ea5e. All 22 locked decisions covered. Version upgrade from 8.17.x to 8.19.16 is the key discovery this session. All 4 execution plans are autonomous:false — they require a human operator at each wave checkpoint."
 }
