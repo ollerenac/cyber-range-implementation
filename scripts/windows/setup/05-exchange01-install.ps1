@@ -88,13 +88,28 @@ Invoke-Command -Session $ExchSession -ScriptBlock {
 Write-Host "`n=== Step 3: Reboot exchange01 ===" -ForegroundColor Cyan
 Invoke-Command -Session $ExchSession -ScriptBlock { Restart-Computer -Force }
 Remove-PSSession $ExchSession -EA SilentlyContinue
-Write-Host "[i] Waiting 3 minutes for exchange01 to reboot..."
-Start-Sleep -Seconds 180
+
+# Poll until exchange01 accepts a new WinRM session (up to 10 minutes).
+# A fixed sleep is not reliable: Exchange post-install reboots on a 10 GiB RAM VM
+# routinely exceed 3 minutes depending on service initialization time.
+Write-Host "[i] Polling for exchange01 to come back online (up to 10 min)..."
+$deadline    = (Get-Date).AddMinutes(10)
+$ExchSession2 = $null
+while ((Get-Date) -lt $deadline) {
+    Start-Sleep -Seconds 15
+    try {
+        $ExchSession2 = New-PSSession -ComputerName $ExchangeMgmtIP `
+            -Credential $DomainCred -SessionOption $SessionOpts -EA Stop
+        Write-Host "[PASS] exchange01 is back online"
+        break
+    } catch { }
+}
+if (-not $ExchSession2) {
+    Write-Error "exchange01 did not come back within 10 minutes. Check Proxmox console for VM state."
+}
 
 # ─── Step 4: EWS ApplicationImpersonation for EWS Admins ─────────────────────
 Write-Host "`n=== Step 4: EWS ApplicationImpersonation ===" -ForegroundColor Cyan
-
-$ExchSession2 = New-PSSession -ComputerName $ExchangeMgmtIP -Credential $DomainCred -SessionOption $SessionOpts
 
 Invoke-Command -Session $ExchSession2 -ScriptBlock {
     Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn -ErrorAction SilentlyContinue
