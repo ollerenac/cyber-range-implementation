@@ -153,19 +153,21 @@ REM Domain: lab.local (original: boombox.boom.box)
 sqlcmd -S sql01.lab.local -Q "SELECT TOP 1 * FROM sitedata.dbo.minfac"
 "@ | Out-File -FilePath $BatPath -Encoding ASCII
 
-    # Register scheduled task to run as LAB\tous at system startup
-    $existing = schtasks /query /tn "SQL Connection" 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        schtasks /delete /tn "SQL Connection" /f | Out-Null
-    }
-    schtasks /create /tn "SQL Connection" /tr "`"$BatPath`"" `
-        /sc onstart /RU "LAB\tous" /RP "$TousPassword" /F | Out-Null
+    # Register scheduled task to run as LAB\tous at system startup.
+    # Use Register-ScheduledTask (PowerShell 3+) instead of schtasks /RP so the
+    # password is passed as a structured parameter and never interpolated into a
+    # command-line string — avoids injection if $TousPassword contains ", %, ^, or &.
+    $taskAction  = New-ScheduledTaskAction -Execute "`"$BatPath`""
+    $taskTrigger = New-ScheduledTaskTrigger -AtStartup
+    Register-ScheduledTask -TaskName "SQL Connection" `
+        -Action $taskAction -Trigger $taskTrigger `
+        -User "LAB\tous" -Password $TousPassword -RunLevel Highest -Force | Out-Null
 
-    if ($LASTEXITCODE -eq 0) {
+    if (Get-ScheduledTask -TaskName "SQL Connection" -EA SilentlyContinue) {
         Write-Host "[PASS] sql_connection.bat created at $BatPath"
         Write-Host "[PASS] Scheduled task 'SQL Connection' registered (runs as LAB\tous at startup)"
     } else {
-        Write-Warning "Scheduled task creation returned exit $LASTEXITCODE — verify manually"
+        Write-Warning "Scheduled task 'SQL Connection' not found after registration — verify manually"
     }
 } -ArgumentList $TousPassword
 
