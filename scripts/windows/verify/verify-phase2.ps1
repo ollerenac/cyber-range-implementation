@@ -22,10 +22,20 @@
 # LAN-internal only. No internet exposure. Lab-only configuration per T-02-03 in threat model.
 
 param(
-  [string]$Password = "Admin@Lab2025!"
+  [string]$Password = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+# Require operator to supply the password explicitly — never use a default credential.
+# Run as: pwsh verify-phase2.ps1 -Password 'ActualLabPassword'
+# The actual password lives in .planning/secrets/PASSWORDS.md (gitignored).
+if ([string]::IsNullOrEmpty($Password)) {
+    throw "The -Password parameter is required. " +
+        "Run: pwsh verify-phase2.ps1 -Password 'ActualLabPassword' " +
+        "(see .planning/secrets/PASSWORDS.md for the lab Administrator password)"
+}
+
 $pass = ConvertTo-SecureString $Password -AsPlainText -Force
 $cred = New-Object PSCredential("Administrator", $pass)
 
