@@ -100,26 +100,38 @@ foreach ($VMName in $TargetVMs.Keys) {
         Write-Host "       Check that WinRM is responding: Test-WSMan -ComputerName $MgmtIP"
     }
 
-    # Wait for VM to reboot and come back
-    Write-Host "[i] Waiting 90s for $VMName to reboot and rejoin network..."
-    Start-Sleep -Seconds 90
+    # Poll until the VM accepts a WinRM connection post-reboot (up to 3 minutes).
+    # A fixed 90s sleep is not reliable for EXCHANGE01 (10 GiB RAM + Exchange services).
+    Write-Host "[i] Polling for $VMName to come back (up to 3 min)..."
+    $deadline    = (Get-Date).AddMinutes(3)
+    $PostSession = $null
+    while ((Get-Date) -lt $deadline) {
+        Start-Sleep -Seconds 10
+        try {
+            $PostSession = New-PSSession -ComputerName $MgmtIP -Credential $DomainCred `
+                -SessionOption $SessionOpts -EA Stop
+            break
+        } catch { }
+    }
 
     # Step 4: Verify domain membership post-reboot (connect as domain admin now)
-    try {
-        $PostSession = New-PSSession -ComputerName $MgmtIP -Credential $DomainCred `
-            -SessionOption $SessionOpts
-        $IsDomainMember = Invoke-Command -Session $PostSession -ScriptBlock {
-            (Get-WmiObject Win32_ComputerSystem).PartOfDomain
-        }
-        Remove-PSSession $PostSession -EA SilentlyContinue
+    if ($PostSession) {
+        try {
+            $IsDomainMember = Invoke-Command -Session $PostSession -ScriptBlock {
+                (Get-WmiObject Win32_ComputerSystem).PartOfDomain
+            }
+            Remove-PSSession $PostSession -EA SilentlyContinue
 
-        if ($IsDomainMember) {
-            Write-Host "[PASS] $VMName is now a domain member of $DomainName" -ForegroundColor Green
-        } else {
-            Write-Warning "[FAIL] $VMName reports PartOfDomain=False — check domain join logs"
+            if ($IsDomainMember) {
+                Write-Host "[PASS] $VMName is now a domain member of $DomainName" -ForegroundColor Green
+            } else {
+                Write-Warning "[FAIL] $VMName reports PartOfDomain=False — check domain join logs"
+            }
+        } catch {
+            Write-Warning "[WARN] $VMName: could not verify domain membership post-reboot — $_"
         }
-    } catch {
-        Write-Warning "[WARN] $VMName: could not verify domain membership post-reboot — $_"
+    } else {
+        Write-Warning "[WARN] $VMName did not respond within 3 min — verify domain join manually"
     }
 }
 
