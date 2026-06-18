@@ -57,31 +57,45 @@ Write-Host "[i] Section 1: Creating D-03 domain user accounts"
 
 Write-Host "[i] Creating user: judy (Wizard Spider — Domain Users)"
 net user /add /domain judy $JudyPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add judy failed (exit $LASTEXITCODE)" }
 net user /domain judy /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user judy /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: vfleming (Wizard Spider — Domain Admins)"
 net user /add /domain vfleming $VflemingPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add vfleming failed (exit $LASTEXITCODE)" }
 net user /domain vfleming /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user vfleming /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: tous (OilRig — EWS Admins, SQL Admins)"
 net user /add /domain tous $TousPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add tous failed (exit $LASTEXITCODE)" }
 net user /domain tous /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user tous /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: gosta (OilRig — EWS Admins)"
 net user /add /domain gosta $GostaPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add gosta failed (exit $LASTEXITCODE)" }
 net user /domain gosta /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user gosta /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: mariam (OilRig — Domain Users)"
 net user /add /domain mariam $MariamPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add mariam failed (exit $LASTEXITCODE)" }
 net user /domain mariam /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user mariam /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: shiroyeh (OilRig — Domain Users)"
 net user /add /domain shiroyeh $ShiroyehPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add shiroyeh failed (exit $LASTEXITCODE)" }
 net user /domain shiroyeh /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user shiroyeh /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Creating user: shiroyeh_admin (OilRig — Domain Admins)"
 net user /add /domain shiroyeh_admin $ShiroyehAdminPassword
+if ($LASTEXITCODE -ne 0) { throw "net user /add shiroyeh_admin failed (exit $LASTEXITCODE)" }
 net user /domain shiroyeh_admin /EXPIRES:NEVER
+if ($LASTEXITCODE -ne 0) { throw "net user shiroyeh_admin /EXPIRES:NEVER failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] All 7 D-03 user accounts created."
 
@@ -92,18 +106,25 @@ Write-Host ""
 Write-Host "[i] Section 2: Creating groups and assigning membership (D-03)"
 
 net group /add /domain "EWS Admins"
+if ($LASTEXITCODE -ne 0) { throw "net group /add 'EWS Admins' failed (exit $LASTEXITCODE)" }
 net group /add /domain "SQL Admins"
+if ($LASTEXITCODE -ne 0) { throw "net group /add 'SQL Admins' failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Adding tous and gosta to EWS Admins"
 net group "EWS Admins" /add /domain tous
+if ($LASTEXITCODE -ne 0) { throw "net group 'EWS Admins' /add tous failed (exit $LASTEXITCODE)" }
 net group "EWS Admins" /add /domain gosta
+if ($LASTEXITCODE -ne 0) { throw "net group 'EWS Admins' /add gosta failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Adding tous to SQL Admins"
 net group "SQL Admins" /add /domain tous
+if ($LASTEXITCODE -ne 0) { throw "net group 'SQL Admins' /add tous failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Adding shiroyeh_admin and vfleming to Domain Admins"
 net group "Domain Admins" /add /domain shiroyeh_admin
+if ($LASTEXITCODE -ne 0) { throw "net group 'Domain Admins' /add shiroyeh_admin failed (exit $LASTEXITCODE)" }
 net group "Domain Admins" /add /domain vfleming
+if ($LASTEXITCODE -ne 0) { throw "net group 'Domain Admins' /add vfleming failed (exit $LASTEXITCODE)" }
 
 Write-Host "[i] Group memberships configured."
 
