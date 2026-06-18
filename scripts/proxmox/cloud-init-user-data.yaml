@@ -1,0 +1,61 @@
+#cloud-config
+# =============================================================================
+# cloud-init-user-data.yaml — Shared Ubuntu 22.04 cloud-init template
+# Used by: create-elastic-vm.sh (elastic-vm) and create-caldera-vm.sh (caldera-vm)
+#
+# PARAMETERIZED VALUES (set via qm cloud-init args, NOT hardcoded here):
+#   hostname    — set via `qm set <VMID> --hostname <name>`
+#   MGMT IP     — set via `qm set <VMID> --ipconfig0 ip=<ip>/24,gw=<gw>`
+#   operator user/key — set via --ciuser / --sshkeys
+#
+# ELASTICSEARCH OS PREREQUISITES (Pitfall 3 from RESEARCH.md):
+#   vm.max_map_count=262144 — required before Elasticsearch starts in production mode
+#   elasticsearch nofile 65535 — required for file descriptor limits under production mode
+#   These settings are harmless on caldera-vm and MANDATORY on elastic-vm.
+# =============================================================================
+
+# Disable password auth; key-only SSH enforced
+ssh_pwauth: false
+
+# Package installation
+packages:
+  - qemu-guest-agent
+  - openssh-server
+
+# Enable services immediately
+runcmd:
+  # Enable and start QEMU Guest Agent (required for graceful Proxmox shutdown / status)
+  - [ systemctl, enable, qemu-guest-agent ]
+  - [ systemctl, start, qemu-guest-agent ]
+
+  # Apply vm.max_map_count permanently (Elasticsearch Pitfall 3 — production bootstrap check)
+  - [ sysctl, -w, "vm.max_map_count=262144" ]
+  - [ sysctl, -p, /etc/sysctl.d/99-elasticsearch.conf ]
+
+# Write Elasticsearch OS prerequisite files before first boot completes
+write_files:
+  # vm.max_map_count — persistent across reboots via sysctl.d (Pitfall 3)
+  - path: /etc/sysctl.d/99-elasticsearch.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      # Required by Elasticsearch production mode bootstrap check (RESEARCH.md Pitfall 3)
+      # elastic-vm: mandatory before starting Elasticsearch
+      # caldera-vm: harmless no-op
+      vm.max_map_count=262144
+
+  # File descriptor limits for elasticsearch system user (Pitfall 3)
+  - path: /etc/security/limits.d/99-elasticsearch.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      # Required by Elasticsearch production mode bootstrap check (RESEARCH.md Pitfall 3)
+      # elastic-vm: mandatory — set before Elasticsearch is installed in Plan 03
+      # caldera-vm: harmless no-op
+      elasticsearch soft nofile 65535
+      elasticsearch hard nofile 65535
+
+# Final message logged to /var/log/cloud-init-output.log
+final_message: |
+  cloud-init complete. vm.max_map_count=262144 and elasticsearch nofile limits applied.
+  Host is ready for Proxmox management (QEMU Guest Agent running).
