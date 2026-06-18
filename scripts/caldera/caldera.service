@@ -1,0 +1,16 @@
+[Unit]
+Description=MITRE CALDERA C2 Framework 5.3.0
+After=network.target
+Documentation=https://caldera.readthedocs.io/en/latest/
+
+[Service]
+Type=simple
+User=caldera
+WorkingDirectory=/opt/caldera
+ExecStart=/usr/bin/python3 server.py --insecure
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
