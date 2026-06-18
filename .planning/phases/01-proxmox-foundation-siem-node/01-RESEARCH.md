@@ -771,7 +771,7 @@ ss -tlnp | grep 7010
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **CALDERA agent beacon port: 8853 vs 7010**
    - What we know: CONTEXT.md says "Fleet Server port: 8220 ... CALDERA agent beacon: 8853 (TCP contact)". CALDERA 5.x docs show `app.contact.tcp: 0.0.0.0:7010` as the TCP contact. The HTTP contact (port 8888) is the default beaconing method for sandcat.
