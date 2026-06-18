@@ -1,0 +1,57 @@
+# Kibana configuration for cyber-range elastic-vm
+# Source: https://www.elastic.co/guide/en/kibana/8.17/deb.html
+# Deploy to: /etc/kibana/kibana.yml
+# Managed by: scripts/elastic/install-stack.sh (copy) + scripts/elastic/generate-certs.sh (certs)
+#
+# REQUIRED MANUAL STEP (user_setup):
+#   Before starting Kibana, generate encryption keys and append to this file:
+#     sudo /usr/share/kibana/bin/kibana-encryption-keys generate
+#   This outputs three lines like:
+#     xpack.encryptedSavedObjects.encryptionKey: "<32-char-key>"
+#     xpack.reporting.encryptionKey: "<32-char-key>"
+#     xpack.security.encryptionKey: "<32-char-key>"
+#   Append those three lines to /etc/kibana/kibana.yml.
+#   Without these keys, Kibana will generate random keys on each restart,
+#   breaking saved searches and alerting rules after a restart.
+#
+# Security: server.ssl.enabled: true — Kibana is served HTTPS-only (T-1-02 mitigation).
+# Never set server.ssl.enabled: false in production — this exposes session tokens in plaintext.
+#
+# Cert paths set by generate-certs.sh (kibana cert has SAN IP:10.0.0.10, DNS:elastic-vm):
+#   /etc/kibana/certs/kibana.crt — Kibana TLS certificate
+#   /etc/kibana/certs/kibana.key — Kibana TLS private key (chmod 600)
+#   /etc/kibana/certs/ca.crt    — Lab CA cert (for trusting Elasticsearch connection)
+
+server.port: 5601
+server.host: "10.0.0.10"
+server.name: "cyber-range-kibana"
+
+# Elasticsearch connection (TLS, trusting the lab CA)
+elasticsearch.hosts: ["https://10.0.0.10:9200"]
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/ca.crt"]
+elasticsearch.ssl.verificationMode: "full"
+
+# Kibana HTTPS (browser access)
+server.ssl.enabled: true
+server.ssl.certificate: /etc/kibana/certs/kibana.crt
+server.ssl.key: /etc/kibana/certs/kibana.key
+
+# Logging
+logging.appenders.default:
+  type: rolling-file
+  fileName: /var/log/kibana/kibana.log
+  layout:
+    type: json
+  policy:
+    type: size-limit
+    size: 100mb
+  strategy:
+    type: numeric
+    max: 5
+
+# Fleet Server integration (enables Fleet UI)
+# xpack.fleet.outputs and xpack.fleet.packages are managed via Fleet UI after first boot.
+
+# Note: xpack.*.encryptionKey values must be added by operator via:
+#   sudo /usr/share/kibana/bin/kibana-encryption-keys generate
+# and appended to this file before starting Kibana for the first time.
