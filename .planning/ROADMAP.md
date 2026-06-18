@@ -10,7 +10,7 @@
 ## Phases
 
 - [ ] **Phase 1: Proxmox Foundation + SIEM Node** — Hypervisor networking live and elastic-vm fully operational (Elasticsearch, Kibana, Fleet Server)
-- [ ] **Phase 2: Windows Target Network** — DC, Exchange, SQL, and workstation VMs deployed, domain joined, and reachable
+- [x] **Phase 2: Windows Target Network** — DC, Exchange, SQL, and workstation VMs deployed, domain joined, and reachable ✓ 2026-06-18
 - [ ] **Phase 3: Full Telemetry Pipeline + Reset Mechanism** — Kali deployed, all agents Healthy in Fleet, dual telemetry flowing, one-command reset validated
 - [ ] **Phase 4: Red Team Platform + ML Baseline** — CALDERA operational with a test operation, Elastic ML jobs accumulating 48h of baseline data
 - [ ] **Phase 5: APT Emulation Content** — Three CALDERA adversary packages (APT29, OilRig, Wizard Spider) authored, tested, and ready to run
