@@ -129,13 +129,14 @@ for VM_NAME in "${VM_ORDER[@]}"; do
   # Stage autounattend.xml — Windows Setup looks for this exact filename
   cp "${XML_SRC}" "${STAGING_DIR}/autounattend.xml"
 
-  # Build the ISO
+  # Build the ISO — stderr is left visible so disk-full/permission errors reach the operator.
+  # genisoimage writes both progress output and error messages to stderr; suppressing
+  # it with 2>/dev/null would hide actionable failure messages.
   genisoimage \
     -o "${OUT_ISO}" \
     -J \
     -r \
-    "${STAGING_DIR}/" \
-    2>/dev/null
+    "${STAGING_DIR}/"
 
   # Clean up staging dir immediately
   rm -rf "${STAGING_DIR}"
