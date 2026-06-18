@@ -1,0 +1,12 @@
+# Elasticsearch JVM heap options — elastic-vm (14 GB RAM)
+# Deploy to: /etc/elasticsearch/jvm.options.d/heap.options
+# Source: https://www.elastic.co/guide/en/elasticsearch/reference/8.19/important-settings.html
+#
+# D-08: heap locked at 8g/8g (equal Xms/Xmx eliminates GC expansion latency).
+# OS retains ~6 GB: page cache ~4 GB, Kibana ~1 GB, Fleet Server ~512 MB, overhead ~512 MB.
+#
+# PITFALL 6: NEVER exceed 31g — above 31 GB the JVM disables compressed OOPs (ordinary
+# object pointers), increasing memory overhead by up to 20%. 8g is correct for 14 GB VM.
+# Also: heap must not exceed half of physical RAM.
+-Xms8g
+-Xmx8g

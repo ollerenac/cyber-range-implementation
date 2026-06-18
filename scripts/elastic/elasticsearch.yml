@@ -1,0 +1,20 @@
+# Elasticsearch configuration for cyber-range elastic-vm
+# Source: https://www.elastic.co/guide/en/elasticsearch/reference/8.19/important-settings.html
+#
+# Deploy to: /etc/elasticsearch/elasticsearch.yml
+# Managed by: scripts/elastic/install-stack.sh
+#
+# SECURITY NOTE (T-1-02): xpack.security.enabled is intentionally NOT set here.
+# In Elasticsearch 8.x the default is enabled=true. Never set xpack.security.enabled: false
+# — doing so makes the SIEM world-readable (no auth on port 9200).
+#
+# LOCKED: network.host 10.0.0.10 is bound to Fleet Server cert SAN (D-12).
+# Changing this IP requires regenerating the CA and all certs, then re-enrolling agents.
+
+cluster.name: cyber-range
+node.name: elastic-vm
+network.host: 10.0.0.10
+http.port: 9200
+discovery.type: single-node
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
