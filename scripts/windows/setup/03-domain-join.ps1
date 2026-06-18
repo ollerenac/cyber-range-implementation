@@ -76,9 +76,9 @@ foreach ($VMName in $TargetVMs.Keys) {
                 $resolved = Resolve-DnsName $DomainName -Server $DcTargetIP -EA Stop
                 Write-Host "[PASS] DNS resolved $DomainName via $DcTargetIP"
             } catch {
-                Write-Error "DNS resolution FAILED for '$DomainName' via $DcTargetIP. " +
+                Write-Error ("DNS resolution FAILED for '$DomainName' via $DcTargetIP. " +
                     "Verify dc01 is running and TARGET NIC on this VM reaches 10.10.10.0/24. " +
-                    "Aborting domain join."
+                    "Aborting domain join.")
                 return
             }
 
