@@ -94,4 +94,4 @@ TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10)
 
 ---
 
-*Repository: [github.com/ollerenac/titulacion](https://github.com/ollerenac/titulacion)*
+*Repository: [github.com/ollerenac/cyber-range-implementation](https://github.com/ollerenac/cyber-range-implementation)*

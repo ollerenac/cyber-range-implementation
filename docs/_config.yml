@@ -5,7 +5,7 @@ description: >-
   Thesis project — FIEE-UNI (Trabajo de Suficiencia Profesional).
 
 url: "https://ollerenac.github.io"
-baseurl: "/titulacion"
+baseurl: "/cyber-range-implementation"
 
 theme: jekyll-theme-cayman
 
