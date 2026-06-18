@@ -1,7 +1,7 @@
 # Cyber Range — APT Emulation & Intrusion Detection
 
-> **Trabajo de Suficiencia Profesional · FIEE-UNI**
-> Emulación de amenazas APT y detección de intrusiones sobre infraestructura virtualizada.
+<!-- > **Trabajo de Suficiencia Profesional · FIEE-UNI**
+> Emulación de amenazas APT y detección de intrusiones sobre infraestructura virtualizada. -->
 
 A fully virtualized cyber range that emulates three real-world APT groups using MITRE CALDERA adversary emulation plans, and detects those attacks through the Elastic Stack (SIEM + EDR + ML anomaly detection). An operator can run a scripted APT scenario, observe live attack telemetry, and reset the entire environment to a clean baseline in a single command.
 

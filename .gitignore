@@ -1,3 +1,9 @@
+# Personal documents — never commit to public repo
+cv_docs/
+
+# Third-party library (has its own git repo)
+github/
+
 # Claude Code
 .claude/
 CLAUDE.md
