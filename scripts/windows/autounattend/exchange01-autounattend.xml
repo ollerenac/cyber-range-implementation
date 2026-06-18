@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  exchange01-autounattend.xml — Unattended install answer file for EXCHANGE01
+  ComputerName: EXCHANGE01
+  OS: Windows Server 2019 Standard (Desktop Experience) — index 2
+
+  SECURITY NOTE: This file uses OPERATOR_SETS_PASSWORD as a placeholder.
+  Before building the unattend ISO:
+    1. Copy this file to .planning/secrets/exchange01-autounattend.xml
+    2. Replace OPERATOR_SETS_PASSWORD with the actual Administrator password from .planning/secrets/PASSWORDS.md
+    3. Build the ISO using scripts/proxmox/build-unattend-isos.sh with the copy in .planning/secrets/
+  Never commit files with real passwords to this repository.
+
+  Delivery: package autounattend.xml into an ISO (genisoimage) mounted as a second CD-ROM on the VM.
+  See RESEARCH.md Q1 "Recommended Alternative: Dual ISO Approach" for build commands.
+
+  Disk bus: SATA (--sata0 in qm create) — native Windows SATA drivers, no VirtIO injection needed.
+
+  Note: Exchange Server 2019 CU14+ will be installed on this VM in a later Phase 2 plan.
+  Exchange requires Windows Server 2019 Desktop Experience (index 2).
+-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+
+  <!-- Pass 1: windowsPE — disk configuration and OS image selection -->
+  <settings pass="windowsPE">
+    <component name="Microsoft-Windows-International-Core-WinPE"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <SetupUILanguage>
+        <UILanguage>en-US</UILanguage>
+      </SetupUILanguage>
+      <InputLocale>en-US</InputLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+    <component name="Microsoft-Windows-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <DiskConfiguration>
+        <Disk wcm:action="add">
+          <DiskID>0</DiskID>
+          <WillWipeDisk>true</WillWipeDisk>
+          <CreatePartitions>
+            <CreatePartition wcm:action="add">
+              <Order>1</Order>
+              <Type>Primary</Type>
+              <Extend>true</Extend>
+            </CreatePartition>
+          </CreatePartitions>
+          <ModifyPartitions>
+            <ModifyPartition wcm:action="add">
+              <Order>1</Order>
+              <PartitionID>1</PartitionID>
+              <Format>NTFS</Format>
+              <Label>OS</Label>
+              <Letter>C</Letter>
+              <Active>true</Active>
+            </ModifyPartition>
+          </ModifyPartitions>
+        </Disk>
+      </DiskConfiguration>
+      <ImageInstall>
+        <OSImage>
+          <InstallTo>
+            <DiskID>0</DiskID>
+            <PartitionID>1</PartitionID>
+          </InstallTo>
+          <!-- Windows Server 2019 Standard with Desktop Experience = index 2 -->
+          <InstallFrom>
+            <MetaData wcm:action="add">
+              <Key>/IMAGE/INDEX</Key>
+              <Value>2</Value>
+            </MetaData>
+          </InstallFrom>
+        </OSImage>
+      </ImageInstall>
+      <UserData>
+        <AcceptEula>true</AcceptEula>
+        <FullName>Operator</FullName>
+        <Organization>Lab</Organization>
+      </UserData>
+    </component>
+  </settings>
+
+  <!-- Pass 4: specialize — hostname and timezone -->
+  <settings pass="specialize">
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <ComputerName>EXCHANGE01</ComputerName>
+      <TimeZone>UTC</TimeZone>
+    </component>
+  </settings>
+
+  <!-- Pass 7: oobeSystem — admin password + WinRM bootstrap via FirstLogonCommands -->
+  <settings pass="oobeSystem">
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS"
+               xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <AutoLogon>
+        <Password>
+          <Value>OPERATOR_SETS_PASSWORD</Value>
+          <PlainText>true</PlainText>
+        </Password>
+        <Username>Administrator</Username>
+        <LogonCount>1</LogonCount>
+        <Enabled>true</Enabled>
+      </AutoLogon>
+      <UserAccounts>
+        <AdministratorPassword>
+          <Value>OPERATOR_SETS_PASSWORD</Value>
+          <PlainText>true</PlainText>
+        </AdministratorPassword>
+      </UserAccounts>
+      <FirstLogonCommands>
+        <!-- Order 1: Enable WinRM service -->
+        <SynchronousCommand wcm:action="add">
+          <Order>1</Order>
+          <CommandLine>cmd /c winrm quickconfig -quiet</CommandLine>
+          <Description>Enable WinRM</Description>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <!-- Order 2: Allow unencrypted WinRM (lab use — control node is on MGMT subnet) -->
+        <SynchronousCommand wcm:action="add">
+          <Order>2</Order>
+          <CommandLine>cmd /c winrm set winrm/config/service @{AllowUnencrypted="true"}</CommandLine>
+          <Description>Allow unencrypted WinRM</Description>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <!-- Order 3: Enable basic authentication for WinRM -->
+        <SynchronousCommand wcm:action="add">
+          <Order>3</Order>
+          <CommandLine>cmd /c winrm set winrm/config/service/auth @{Basic="true"}</CommandLine>
+          <Description>Enable WinRM basic auth</Description>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <!-- Order 4: Open Windows Firewall for WinRM (remote administration group) -->
+        <SynchronousCommand wcm:action="add">
+          <Order>4</Order>
+          <CommandLine>cmd /c netsh advfirewall firewall set rule group="remote administration" new enable=yes</CommandLine>
+          <Description>Open firewall for WinRM</Description>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <!-- Order 5: Trust all WinRM hosts (lab environment — MGMT subnet only) -->
+        <SynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <CommandLine>cmd /c winrm set winrm/config/client @{TrustedHosts="*"}</CommandLine>
+          <Description>Trust all WinRM hosts</Description>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+      </FirstLogonCommands>
+      <OOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <HideLocalAccountScreen>true</HideLocalAccountScreen>
+        <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+        <NetworkLocation>Work</NetworkLocation>
+        <ProtectYourPC>3</ProtectYourPC>
+        <SkipMachineOOBE>true</SkipMachineOOBE>
+        <SkipUserOOBE>true</SkipUserOOBE>
+      </OOBE>
+    </component>
+  </settings>
+
+</unattend>
