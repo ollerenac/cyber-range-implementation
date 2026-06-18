@@ -1,0 +1,17 @@
+# Claude Code
+.claude/
+CLAUDE.md
+.continue-here.md
+settings.local.json
+
+# MkDocs build output
+site/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db
