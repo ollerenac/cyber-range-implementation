@@ -1,8 +1,3 @@
----
-layout: default
-title: Phase 01 — Proxmox Foundation + SIEM Node
----
-
 # Phase 01 — Proxmox Foundation + SIEM Node
 
 > **Status:** ✅ Complete · All 4 waves executed and approved

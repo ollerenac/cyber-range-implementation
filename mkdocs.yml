@@ -1,0 +1,44 @@
+site_name: Cyber Range — APT Emulation & Intrusion Detection
+site_url: https://ollerenac.github.io/cyber-range-implementation/
+site_description: >-
+  Virtualized Cyber Range emulating APT29, OilRig, and Wizard Spider using
+  MITRE CALDERA + Elastic Stack (SIEM, EDR, ML anomaly detection).
+  Thesis project — FIEE-UNI (Trabajo de Suficiencia Profesional).
+site_author: Oscar Llerena
+
+repo_name: ollerenac/cyber-range-implementation
+repo_url: https://github.com/ollerenac/cyber-range-implementation
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    primary: custom
+    accent: custom
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.instant
+    - content.code.copy
+    - toc.follow
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Runbooks:
+    - Phase 01 — Proxmox Foundation + SIEM Node: phase-01-runbook.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true

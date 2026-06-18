@@ -1,8 +1,3 @@
----
-layout: default
-title: Cyber Range — APT Emulation & Intrusion Detection
----
-
 # Cyber Range — APT Emulation & Intrusion Detection
 
 > **Trabajo de Suficiencia Profesional · FIEE-UNI**
