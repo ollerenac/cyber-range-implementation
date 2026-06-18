@@ -1,0 +1,38 @@
+---
+# CALDERA 5.3.0 — local configuration override for caldera-vm (10.0.0.20)
+#
+# SECURITY NOTICE (T-1-04):
+#   api_key_red and api_key_blue are set to PLACEHOLDER values below.
+#   You MUST rotate both before starting CALDERA for the first time.
+#   Generate strong random keys, e.g.:
+#     python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+#   Store the keys in a password manager — never commit real keys to git.
+#
+# AGENT BEACON NOTE (Pitfall 5):
+#   app.contact.http MUST be a routable IP, not 0.0.0.0.
+#   Sandcat agents compiled with 0.0.0.0 will never beacon back.
+#   10.0.0.20 is the caldera-vm MGMT IP (D-NEW-08, locked).
+#
+# PORT NOTE (Research A1 / CONTEXT.md):
+#   app.contact.tcp is set to 0.0.0.0:8853 explicitly (CONTEXT.md decision).
+#   CALDERA 5.x defaults to 7010 — this override enforces 8853.
+#   After first start, verify with: ss -tlnp | grep -E '8888|8853|7010'
+#   Document which ports actually listen and update SUMMARY accordingly.
+
+host: 0.0.0.0
+port: 8888
+
+app.contact.http: http://10.0.0.20:8888
+app.contact.tcp: 0.0.0.0:8853
+app.contact.udp: 0.0.0.0:7011
+app.contact.websocket: 0.0.0.0:7012
+
+# ROTATE THESE BEFORE FIRST START — see security notice above
+api_key_red: CHANGE_ME_RED_KEY_PLACEHOLDER
+api_key_blue: CHANGE_ME_BLUE_KEY_PLACEHOLDER
+
+users:
+  blue:
+    blue: CHANGE_ME_BLUE_PASSWORD
+  red:
+    admin: CHANGE_ME_RED_PASSWORD
