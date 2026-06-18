@@ -1,5 +1,6 @@
 # Personal documents — never commit to public repo
 cv_docs/
+BRIEF.md
 
 # Third-party library (has its own git repo)
 github/
