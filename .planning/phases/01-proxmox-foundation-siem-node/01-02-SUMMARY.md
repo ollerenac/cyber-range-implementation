@@ -56,7 +56,7 @@ completed: 2026-06-18
 - **Duration:** 6 min
 - **Started:** 2026-06-18T06:43:20Z
 - **Completed:** 2026-06-18T06:46:11Z
-- **Tasks:** 2/3 complete (2 auto tasks committed; Task 3 is checkpoint:human-verify — paused awaiting operator)
+- **Tasks:** 3/3 complete (2 auto tasks committed; Task 3 checkpoint:human-verify APPROVED by operator)
 - **Files created:** 3
 
 ## Accomplishments
@@ -99,18 +99,10 @@ None.
 
 ## Checkpoint Status (Task 3)
 
-**PENDING** — Task 3 is `type="checkpoint:human-verify"`. The operator must:
+**APPROVED** — Operator confirmed both VMs boot with correct specs and are SSH-reachable (2026-06-18).
 
-On Host 1:
-1. Place Ubuntu 22.04 cloud image, then run `bash scripts/proxmox/create-elastic-vm.sh <VMID> <LAN_GW> <STORAGE> <CLOUD_IMAGE> <SSH_KEYFILE>`
-2. `qm start <VMID>`; confirm `qm config <VMID>` shows memory 14336, 200G disk on local-lvm, net0 on vmbr0, agent=1
-3. SSH to 10.0.0.10; run `sysctl vm.max_map_count` (must be 262144)
-
-On Host 6:
-4. Run `bash scripts/proxmox/create-caldera-vm.sh <VMID> <LAN_GW> <STORAGE> <CLOUD_IMAGE> <SSH_KEYFILE>`; `qm start <VMID>`
-5. Confirm `qm config` shows memory 6144, 40G disk, net0 on vmbr0; SSH to 10.0.0.20 succeeds
-
-Resume signal: type "approved" once both VMs boot, show correct specs, and are SSH-reachable.
+- elastic-vm: running on Host 1, 10.0.0.10, SSH confirmed, vm.max_map_count=262144
+- caldera-vm: running on Host 6, 10.0.0.20, SSH confirmed
 
 ## Threat Surface Scan
 
