@@ -41,34 +41,47 @@ All emulation plans are sourced from the **CTID Adversary Emulation Library** (M
 
 ### Infrastructure
 - **Proxmox VE 8.x** — Type-1 hypervisor, native snapshot/rollback
-- 6 physical hosts with isolated TARGET network (VLAN 10, 10.10.10.0/24)
-- Management network (10.0.0.0/24) — internet access via WiFi→ethernet router + Elastic Agent enrollment
+- **OPNsense VM** — perimeter gateway + Snort IDS (ET Open ruleset) on Host 6
+- 6 physical hosts, management network 10.0.0.0/24, isolated TARGET network 10.10.10.0/24
+- Internet access: WiFi (wlan0 Host 6) → OPNsense NAT → all VMs
 
 ---
 
 ## Lab Topology
 
-```
-Physical layer
-  WiFi hotspot (sala de laboratorio)
-    ↕ wireless
-  [Router WiFi→ETH]  (e.g. TP-Link TL-MR3020)
-    ↕ ethernet
-  [Switch gestionado — VLAN 10 trunk]
-    ↕ ethernet (eth0/eno1) per host
+> ⚠️ **Topology under revision (Phase 1.5 in progress)** — OPNsense perimeter gateway is being added. Host assignment is being finalized before hardware installation. See [Phase 01 runbook](phase-01-runbook#phase-15--perimeter-firewall-pre-install-checklist) for current status.
 
-MGMT Network 10.0.0.0/24 (vmbr0 — internet + enrollment)
-│
-├─ Host 1: elastic-vm  (Ubuntu 22.04) — Elasticsearch + Kibana + Fleet  [10.0.0.10]
-├─ Host 6: caldera-vm  (Ubuntu 22.04) — MITRE CALDERA 5.x C2            [10.0.0.20]
-│
-TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10, NO internet)
-│
-├─ dc-01     (Windows Server 2019) — AD Domain Controller + Exchange 2019  [10.10.10.10]
-├─ sql-01    (Windows Server 2019) — SQL Server 2019 target               [10.10.10.30]
-├─ ws-01     (Windows 10 Enterprise) — Domain workstation (initial access) [10.10.10.40]
-├─ ws-02     (Windows 10 Enterprise) — Domain workstation                  [10.10.10.41]
-└─ kali-01   (Kali Linux 2024.x) — Attacker platform                      [10.10.10.200]
+```
+Internet
+    │
+wlan0 ── Host 6 kernel: ip_forward + MASQUERADE (wlan0 → vmbr_wan 172.16.0.0/30)
+    │
+┌─────────────────────────────────────┐
+│  OPNsense VM  (Host 6, VMID 700)   │
+│  WAN: 172.16.0.2   GW: 172.16.0.1  │
+│  LAN: 10.0.0.254/24                │
+│  [Snort IDS inline — ET Open]       │
+└─────────────────────────────────────┘
+    │
+eth0 Host 6 ──── [Switch] ────┬──── Host 1: elastic-vm  [10.0.0.10]
+                               ├──── Host 2: dc01 + sql01
+                               ├──── Host 3: exchange01
+                               ├──── Host 4: ws01 + ws02
+                               └──── Host 5: caldera-vm + kali-vm  [10.0.0.20]
+
+MGMT Network 10.0.0.0/24 (vmbr0) — default gateway: OPNsense 10.0.0.254
+  └─ elastic-vm   Host 1   Ubuntu 22.04   Elasticsearch + Kibana + Fleet  [10.0.0.10]
+  └─ caldera-vm   Host 5   Ubuntu 22.04   MITRE CALDERA 5.x C2            [10.0.0.20]
+  └─ kali-vm      Host 5   Kali 2024.x    Attacker platform               [10.0.0.30]
+
+TARGET Network 10.10.10.0/24 (vmbr1 — VLAN 10, internet via double NAT → OPNsense)
+  └─ dc01        Host 2   Windows Server 2019   AD DC + Exchange 2019  [10.10.10.10]
+  └─ sql01       Host 2   Windows Server 2019   SQL Server 2019        [10.10.10.30]
+  └─ ws01        Host 4   Windows 10 Enterprise Workstation            [10.10.10.40]
+  └─ ws02        Host 4   Windows 10 Enterprise Workstation            [10.10.10.41]
+
+VMs TARGET reach internet via double NAT:
+  vmbr1 → host kernel MASQUERADE → vmbr0 → OPNsense (10.0.0.254) → wlan0 → Internet
 ```
 
 ---
@@ -77,9 +90,10 @@ TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10, NO internet)
 
 | Phase | Name | Status |
 |-------|------|--------|
-| **01** | Proxmox Foundation + SIEM Node | ✅ Complete |
-| **02** | Windows Target Network | ✅ Complete |
-| **03** | Full Telemetry Pipeline + Reset Mechanism | 🔄 In Progress |
+| **01** | Proxmox Foundation + SIEM Node | ✅ Complete (scripts ready; hardware pending) |
+| **1.5** | Perimeter Firewall — OPNsense + Snort | ⏸ Paused — hardware verification needed |
+| **02** | Windows Target Network | ✅ Complete (scripts ready; hardware pending) |
+| **03** | Full Telemetry Pipeline + Reset Mechanism | ⏸ Paused — blocked by Phase 1.5 |
 | **04** | APT29 Emulation + Detection | Planned |
 | **05** | OilRig Emulation + Detection | Planned |
 | **06** | Wizard Spider Emulation + Detection | Planned |
