@@ -30,6 +30,8 @@ nav:
   - Home: index.md
   - Runbooks:
     - Phase 01 — Proxmox Foundation + SIEM Node: phase-01-runbook.md
+    - Phase 02 — Windows Target Network: phase-02-runbook.md
+    - Phase 03 — Full Telemetry Pipeline + Reset: phase-03-runbook.md
 
 markdown_extensions:
   - admonition
