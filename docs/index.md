@@ -69,17 +69,20 @@ TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10)
 | Phase | Name | Status |
 |-------|------|--------|
 | **01** | Proxmox Foundation + SIEM Node | ✅ Complete |
-| **02** | Windows Target Network | Planned |
-| **03** | APT29 Emulation + Detection | Planned |
-| **04** | OilRig Emulation + Detection | Planned |
-| **05** | Wizard Spider Emulation + Detection | Planned |
-| **06** | ML Anomaly Detection Tuning | Planned |
+| **02** | Windows Target Network | ✅ Complete |
+| **03** | Full Telemetry Pipeline + Reset Mechanism | 🔄 In Progress |
+| **04** | APT29 Emulation + Detection | Planned |
+| **05** | OilRig Emulation + Detection | Planned |
+| **06** | Wizard Spider Emulation + Detection | Planned |
+| **07** | ML Anomaly Detection Tuning | Planned |
 
 ---
 
 ## Operator Runbooks
 
 - [Phase 01 — Proxmox Foundation + SIEM Node Setup](phase-01-runbook)
+- [Phase 02 — Windows Target Network](phase-02-runbook)
+- [Phase 03 — Full Telemetry Pipeline + Reset Mechanism](phase-03-runbook)
 
 <!-- ---
 
