@@ -52,10 +52,20 @@ Internet → router → switch → vmbr0 → [pfSense VM] → vmbr1 → VMs TARG
 
 ## Estado
 
-**Sin decidir** — operador tiene más preguntas técnicas antes de elegir.
+**Decisión propuesta** — ver ADR-001 para diseño completo y plan de implementación.
+
+📄 `.planning/decisions/adr-firewall-opnsense.md`
+
+**Pendiente de confirmar:** verificar que wlan0 en Host 6 funciona bajo Proxmox.
+```bash
+# Correr en Host 6:
+ip link show | grep -E "wlan|wlp"
+iw dev
+```
+Si wlan0 aparece → ADR pasa a `accepted` y se crea Phase 1.5.
 
 ## Cómo retomar después de /clear
 
 Después de hacer `/clear`, escribe:
-> "lee .planning/open-decisions/vmbr1-internet-access.md y sigamos
-> la conversación sobre dar internet a la red TARGET"
+> "lee .planning/decisions/adr-firewall-opnsense.md y continuemos
+> con la planificación del firewall OPNsense en Host 6"

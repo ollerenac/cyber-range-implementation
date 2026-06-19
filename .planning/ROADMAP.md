@@ -10,6 +10,7 @@
 ## Phases
 
 - [ ] **Phase 1: Proxmox Foundation + SIEM Node** — Hypervisor networking live and elastic-vm fully operational (Elasticsearch, Kibana, Fleet Server)
+- [ ] **Phase 1.5: Perimeter Firewall** — OPNsense VM on Host 6 is the lab gateway (wlan0 WAN, eth0 LAN), Snort inline active, all VMs reach internet through OPNsense
 - [x] **Phase 2: Windows Target Network** — DC, Exchange, SQL, and workstation VMs deployed, domain joined, and reachable ✓ 2026-06-18
 - [ ] **Phase 3: Full Telemetry Pipeline + Reset Mechanism** — Kali deployed, all agents Healthy in Fleet, dual telemetry flowing, one-command reset validated
 - [ ] **Phase 4: Red Team Platform + ML Baseline** — CALDERA operational with a test operation, Elastic ML jobs accumulating 48h of baseline data
@@ -51,6 +52,36 @@ Plans:
 **Wave 4** *(blocked on Wave 3 completion)*
 
 - [ ] 01-04-PLAN.md — CALDERA 5.3.0 on caldera-vm, snapshot workflow + reset_range.sh scaffold, all 4 Phase 1 gates
+
+---
+
+### Phase 1.5: Perimeter Firewall
+
+**Goal:** OPNsense VM on Host 6 is the perimeter gateway for the entire lab — internet reaches all MGMT and TARGET VMs through OPNsense, Snort IDS is inline on the LAN interface monitoring all inter-segment traffic.
+**Mode:** mvp
+**Depends on:** Phase 1 (Wave 1 — Proxmox networking foundation complete)
+**Requirements:** INFRA-08, INFRA-09
+**Success Criteria** (what must be TRUE):
+
+  1. Operator runs `ping 8.8.8.8` from any MGMT VM (caldera-vm, elastic-vm) — receives replies routed through OPNsense LAN (10.0.0.254) → wlan0 → internet
+  2. Operator runs `ping 8.8.8.8` from any TARGET VM (dc01, exchange01) — receives replies through host NAT (vmbr1→vmbr0) → OPNsense → internet
+  3. Operator opens OPNsense web UI (https://10.0.0.254) — dashboard shows WAN interface UP with wlan0 IP, LAN interface UP on 10.0.0.254/24, NAT rules active
+  4. Operator triggers a port scan from Kali toward the switch subnet — Snort generates at least one alert visible in OPNsense Alerts log
+  5. Host 6 kernel shows `iptables -t nat -L POSTROUTING` with a MASQUERADE rule on vmbr_wan → wlan0
+
+**Plans:** 3 planes en 3 waves
+
+**Wave 1**
+
+- [ ] 01.5-01-PLAN.md — Host 6 network prep: host6-firewall-setup.sh (vmbr_wan 172.16.0.0/30 + iptables MASQUERADE) + configure-vmbr-lan.sh (vmbr_lan 10.0.0.254/24)
+
+**Wave 2** *(blocked on Wave 1 — bridges must exist before VM deploy)*
+
+- [ ] 01.5-02-PLAN.md — OPNsense VM deploy (VMID 700, Host 6, dual-NIC) + manual install checkpoint + WAN/LAN/NAT/Snort config
+
+**Wave 3** *(blocked on Wave 2 — OPNsense must be live before docs are accurate)*
+
+- [ ] 01.5-03-PLAN.md — Documentation update: index.md topology + phase-01/02/03 runbooks with OPNsense gateway and Snort telemetry
 
 ---
 
@@ -190,6 +221,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Proxmox Foundation + SIEM Node | 1/4 | In Progress|  |
+| 1.5. Perimeter Firewall | 0/? | Not started | - |
 | 2. Windows Target Network | 7/7 | Checkpoint (human-verify) |  |
 | 3. Full Telemetry Pipeline + Reset Mechanism | 0/? | Not started | - |
 | 4. Red Team Platform + ML Baseline | 0/? | Not started | - |
@@ -210,6 +242,8 @@ Plans:
 | INFRA-05 | 2 | sql01 — plans 02-01, 02-02, 02-04, 02-06 |
 | INFRA-06 | 2 | ws01 + ws02 workstations — plans 02-01, 02-02, 02-04, 02-07 |
 | INFRA-07 | 3 | kali attacker platform |
+| INFRA-08 | 1.5 | OPNsense VM perimeter gateway (Host 6, wlan0 WAN) |
+| INFRA-09 | 1.5 | Snort inline IDS on OPNsense LAN |
 | TELEM-01 | 3 | Elastic Agent enrollment via MGMT NIC |
 | TELEM-02 | 3 | Elastic Defend DETECT mode verified |
 | TELEM-03 | 3 | Sysmon + sysmon-modular on all Windows VMs |
