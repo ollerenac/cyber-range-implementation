@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
-current_plan: 7
-status: complete
-stopped_at: "02-07 COMPLETE — operator approved verify-phase2.ps1 all [PASS]; Phase 2 COMPLETE"
-last_updated: "2026-06-18T21:55:00.000Z"
+current_phase: 03
+current_plan: 1
+status: executing
+stopped_at: "Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; awaiting operator lab access to run Kali VM + Sysmon merge + Fleet policy steps"
+last_updated: "2026-06-18T22:50:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 1
-  total_plans: 11
-  completed_plans: 8
-  percent: 14
+  completed_phases: 2
+  total_plans: 15
+  completed_plans: 11
+  percent: 29
 ---
 
 # State: Cyber Range — APT Emulation & Intrusion Detection
@@ -34,11 +34,11 @@ progress:
 
 ## Current Position
 
-Phase: 02 (windows-target-network) — EXECUTING
-Plan: 1 of 7
-**Current phase:** 02
-**Current plan:** 1
-**Status:** Executing Phase 02
+Phase: 03 (full-telemetry-reset) — CHECKPOINT (Wave 1 scripts committed; awaiting operator)
+Plan: Wave 1 of 3 — scripts written, operator steps pending
+**Current phase:** 03
+**Current plan:** Wave 1 checkpoint
+**Status:** Paused — operator must run lab steps before Wave 2
 
 **Progress:**
 
@@ -128,13 +128,18 @@ None.
 
 ## Session Continuity
 
-**To resume:** Read `.planning/phases/01-proxmox-foundation-siem-node/.continue-here.md` — full handoff with anti-patterns, remaining work, and decisions. Structured machine state in `.planning/HANDOFF.json`.
+**To resume:** Complete Wave 1 operator checklist (Kali VM + Sysmon XMLs + Fleet policies), then run `/gsd:execute-phase 03` — orchestrator will skip completed plans and continue from Wave 2.
 
-**Last session:** 2026-06-18T21:55:00.000Z
-**Stopped at:** Phase 2 COMPLETE — all 7 plans executed; verify-phase2.ps1 all [PASS]; operator approved 02-07 checkpoint
+**Last session:** 2026-06-18T22:50:00.000Z
+**Stopped at:** Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; operator lab steps pending
 **Resume file:** None
 
-**Next action:** Begin Phase 3 — Elastic Agent enrollment + clean_state snapshot. Run `/gsd:execute-phase 03` when ready.
+**Wave 1 operator checklist (before resuming):**
+- [ ] A1-A11: Kali VMID 601 on Host 6, dual NICs, SSH keys, BloodHound CE, Mimikatz staged
+- [ ] B1-B2: Sysmon XMLs merged (pwsh) + staged on elastic-vm HTTP server :8080
+- [ ] B3: Fleet policies `windows-target` + `kali-linux` created in Kibana (Elastic Defend = DETECT); enrollment tokens in PASSWORDS.md
+
+**Next action (when lab is available):** Complete checklist above → reply "wave1-complete" → Wave 2 begins (Elastic Agent enrollment on all Windows VMs + Kali).
 
 **Phase 1 planning completed:**
 
