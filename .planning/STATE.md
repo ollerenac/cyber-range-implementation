@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
+current_phase: 01.5
 current_plan: 1
 status: executing
-stopped_at: "Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; awaiting operator lab access to run Kali VM + Sysmon merge + Fleet policy steps"
-last_updated: "2026-06-19T06:40:00.000Z"
+stopped_at: Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; operator lab steps pending
+last_updated: "2026-06-19T08:55:06.896Z"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 2
-  total_plans: 15
-  completed_plans: 11
-  percent: 29
+  total_plans: 18
+  completed_plans: 13
+  percent: 25
 ---
 
 # State: Cyber Range — APT Emulation & Intrusion Detection
@@ -34,11 +34,11 @@ progress:
 
 ## Current Position
 
-Phase: 03 (full-telemetry-reset) — CHECKPOINT (Wave 1 scripts committed; awaiting operator)
-Plan: Wave 1 of 3 — scripts written, operator steps pending
-**Current phase:** 03
-**Current plan:** Wave 1 checkpoint
-**Status:** Paused — operator must run lab steps before Wave 2
+Phase: 01.5 (perimeter-firewall) — EXECUTING
+Plan: 1 of 3
+**Current phase:** 01.5
+**Current plan:** 1
+**Status:** Executing Phase 01.5
 
 **Progress:**
 
@@ -136,6 +136,7 @@ None.
 **Resume file:** None
 
 **Wave 1 operator checklist (before resuming):**
+
 - [ ] A1-A11: Kali VMID 601 on Host 6, dual NICs, SSH keys, BloodHound CE, Mimikatz staged
 - [ ] B1-B2: Sysmon XMLs merged (pwsh) + staged on elastic-vm HTTP server :8080
 - [ ] B3: Fleet policies `windows-target` + `kali-linux` created in Kibana (Elastic Defend = DETECT); enrollment tokens in PASSWORDS.md
