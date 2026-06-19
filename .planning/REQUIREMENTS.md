@@ -14,6 +14,8 @@
 - [ ] **INFRA-05**: sql01 (Windows Server 2019, máquina dedicada) con SQL Server 2019 instalado y unido al dominio
 - [x] **INFRA-06**: ws01 (Windows 10/11, máquina compartida con kali o dedicada) como workstation del dominio — target realista para lateral movement
 - [ ] **INFRA-07**: kali (Kali Linux) con Metasploit, Impacket, BloodHound CE y Mimikatz instalados y funcionales
+- [ ] **INFRA-08**: OPNsense VM en Host 6 (rol firewall) como gateway perimetral del lab — WAN=wlan0 (via NAT kernel host), LAN=eth0→switch→hosts 1-5; todas las VMs MGMT y TARGET usan OPNsense como default gateway hacia internet
+- [ ] **INFRA-09**: Snort IDS inline en OPNsense LAN interface — reglas ET Open activas; alerta en tráfico C2 anómalo, escaneo de red y movimiento lateral cross-segment
 
 ### Reset Mechanism (RESET)
 
