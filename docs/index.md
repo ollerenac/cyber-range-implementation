@@ -42,24 +42,33 @@ All emulation plans are sourced from the **CTID Adversary Emulation Library** (M
 ### Infrastructure
 - **Proxmox VE 8.x** — Type-1 hypervisor, native snapshot/rollback
 - 6 physical hosts with isolated TARGET network (VLAN 10, 10.10.10.0/24)
-- Management network (10.0.0.0/24) for Elastic Agent enrollment
+- Management network (10.0.0.0/24) — internet access via WiFi→ethernet router + Elastic Agent enrollment
 
 ---
 
 ## Lab Topology
 
 ```
-MGMT Network 10.0.0.0/24 (vmbr0 — LAN access, Elastic enrollment)
+Physical layer
+  WiFi hotspot (sala de laboratorio)
+    ↕ wireless
+  [Router WiFi→ETH]  (e.g. TP-Link TL-MR3020)
+    ↕ ethernet
+  [Switch gestionado — VLAN 10 trunk]
+    ↕ ethernet (eth0/eno1) per host
+
+MGMT Network 10.0.0.0/24 (vmbr0 — internet + enrollment)
 │
 ├─ Host 1: elastic-vm  (Ubuntu 22.04) — Elasticsearch + Kibana + Fleet  [10.0.0.10]
 ├─ Host 6: caldera-vm  (Ubuntu 22.04) — MITRE CALDERA 5.x C2            [10.0.0.20]
 │
-TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10)
+TARGET Network 10.10.10.0/24 (vmbr1 — air-gapped, VLAN 10, NO internet)
 │
-├─ dc-01     (Windows Server 2019) — AD Domain Controller + Exchange 2019
-├─ sql-01    (Windows Server 2019) — SQL Server 2019 target
-├─ ws-01     (Windows 10 Enterprise) — Domain workstation, initial access target
-└─ kali-01   (Kali 2024.x) — Attacker platform
+├─ dc-01     (Windows Server 2019) — AD Domain Controller + Exchange 2019  [10.10.10.10]
+├─ sql-01    (Windows Server 2019) — SQL Server 2019 target               [10.10.10.30]
+├─ ws-01     (Windows 10 Enterprise) — Domain workstation (initial access) [10.10.10.40]
+├─ ws-02     (Windows 10 Enterprise) — Domain workstation                  [10.10.10.41]
+└─ kali-01   (Kali Linux 2024.x) — Attacker platform                      [10.10.10.200]
 ```
 
 ---

@@ -11,7 +11,7 @@ This runbook covers standing up the hypervisor networking fabric and the two per
 ```
 Physical hosts: 6x Proxmox VE 8.x nodes
 
-Management network  vmbr0 — 10.0.0.0/24 (LAN access, Elastic Agent enrollment)
+Management network  vmbr0 — 10.0.0.0/24 (MGMT + internet via router → switch → eth0)
   └─ elastic-vm     10.0.0.10   Host 1    Ubuntu 22.04  14 GB RAM / 200 GB disk
   └─ caldera-vm     10.0.0.20   Host 6    Ubuntu 22.04   6 GB RAM /  40 GB disk
 
@@ -20,6 +20,13 @@ Target network      vmbr1 — 10.10.10.0/24 (air-gapped, VLAN 10 — NO internet
 ```
 
 > **Security property:** `vmbr1` has **no physical NIC uplink** — target VMs cannot reach the internet or host LAN. The managed switch carries VLAN 10 with no inter-VLAN routing.
+
+!!! note "Physical layer: WiFi → router → switch → eth0"
+    Each Proxmox host has one ethernet port (eth0/eno1) and one wireless card.
+    A physical router (e.g. TP-Link TL-MR3020) connects wirelessly to the lab's WiFi
+    hotspot and provides an ethernet uplink to the managed switch. All hosts reach the
+    internet and each other via `vmbr0` bridged to eth0. The wireless card on each host
+    is unused after the router is in place.
 
 ---
 
@@ -31,6 +38,7 @@ Target network      vmbr1 — 10.10.10.0/24 (air-gapped, VLAN 10 — NO internet
 - 6 Proxmox VE 8.x hosts with SSH root access
 - Managed switch with 802.1Q VLAN 10 support
 - LVM-thin storage pool (`local-lvm`) present on each host
+- Physical router (WiFi→ETH) connected to managed switch — provides internet to vmbr0 via eth0
 
 ### Step 1 — Verify storage pools
 

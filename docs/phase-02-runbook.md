@@ -18,11 +18,13 @@ This runbook covers provisioning the five Windows target VMs (dc01, exchange01, 
 | ws02 | 402 | Host 4 | 4 GB | 60 GB | 10.0.0.15 | 10.10.10.50 | Workstation — Toto (lateral movement target) |
 
 Each VM has two NICs:
+
 - **net0 → vmbr1** (TARGET 10.10.10.0/24) — emulation traffic, air-gapped
+
 - **net1 → vmbr0** (MGMT 10.0.0.0/24) — WinRM, Elastic Agent, SSH from control node
 
 !!! note
-    The MGMT subnet (vmbr0) has internet access for ISO downloads and package installs.
+    The MGMT subnet (vmbr0) has internet access via the lab router (WiFi hotspot → router → switch → eth0 → vmbr0) for ISO downloads and package installs.
     The TARGET subnet (vmbr1) is air-gapped — no internet, no inter-VLAN routing.
 
 ---

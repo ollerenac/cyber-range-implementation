@@ -6,7 +6,7 @@ current_phase: 03
 current_plan: 1
 status: executing
 stopped_at: "Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; awaiting operator lab access to run Kali VM + Sysmon merge + Fleet policy steps"
-last_updated: "2026-06-18T22:50:00.000Z"
+last_updated: "2026-06-19T06:40:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 2
@@ -18,7 +18,7 @@ progress:
 # State: Cyber Range — APT Emulation & Intrusion Detection
 
 **Project:** Cyber Range / APT Emulation Thesis (TSP — FIEE-UNI)
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-19
 
 ---
 
@@ -89,6 +89,7 @@ Phase 7  [          ] Not started
 | -ErrorAction Continue on all CTID Defender cmdlets | Re-runs on partially-configured VMs must not abort; Defender may already be partially disabled | Confirmed pattern |
 | Defender pre-flight exit in 08-workstations.ps1 | file_generator.exe silently fails if Defender is on (Pitfall 8); abort-on-still-enabled guard prevents silent corruption | Confirmed pattern |
 | Chrome credential caching is operator-only manual step | Chrome DPAPI ties saved passwords to the logged-in interactive session; cannot be scripted from WinRM | Confirmed pattern |
+| WiFi→router→switch→eth0→vmbr0 for internet + MGMT | Each host has 1 ETH + 1 wireless; a physical router (Option C) bridges the lab WiFi hotspot to ethernet at the switch; vmbr0 bridges eth0 giving all hosts internet + MGMT on one cable; wireless card unused in production | Confirmed pattern |
 
 ### Critical Constraints (Non-Negotiable)
 
@@ -130,7 +131,7 @@ None.
 
 **To resume:** Complete Wave 1 operator checklist (Kali VM + Sysmon XMLs + Fleet policies), then run `/gsd:execute-phase 03` — orchestrator will skip completed plans and continue from Wave 2.
 
-**Last session:** 2026-06-18T22:50:00.000Z
+**Last session:** 2026-06-19T06:40:00.000Z
 **Stopped at:** Phase 3 Wave 1 CHECKPOINT — 03-01 (create-kali-vm.sh) + 03-02 (09-elastic-agent.ps1) committed; operator lab steps pending
 **Resume file:** None
 
